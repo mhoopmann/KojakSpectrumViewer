@@ -18,6 +18,13 @@ CCheckbox::~CCheckbox(){
   font = NULL;
 }
 
+int CCheckbox::getCaptionWidth(){
+  int fontSize=font->fontSize;
+  font->fontSize=sz;
+  int i = font->getStringWidth(caption);
+  font->fontSize=fontSize;
+  return i;
+}
 
 bool CCheckbox::logic(int mouseX, int mouseY, int mouseButton){
   if(mouseButton==1){
@@ -43,7 +50,7 @@ void CCheckbox::render(){
   //SDL_RenderFillRect(display->renderer,&r);
 
   //Draw border
-  SDL_SetRenderDrawColor(display->renderer,58,58,58,255);
+  SDL_SetRenderDrawColor(display->renderer,color.r,color.g,color.b,255);
   SDL_RenderDrawRect(display->renderer,&r);
 
   //Draw checkbox
@@ -67,6 +74,7 @@ void CCheckbox::render(){
 
 void CCheckbox::setDisplay(CDisplay* d){
   display=d;
+  color=display->pal.checkbox;
 }
 
 void CCheckbox::setFocus(CActiveFocus* f){
@@ -77,6 +85,3 @@ void CCheckbox::setFont(CFont* f){
   font=f;
 }
 
-void CCheckbox::setSize(int s){
-  sz = s;
-}

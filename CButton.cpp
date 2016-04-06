@@ -4,11 +4,12 @@ CButton::CButton(){
   activeFocus = NULL;
   display = NULL;
   font    = NULL;
-  texture = NULL;
+  image = NULL;
 
   active=true;
   lockButton=false;
   highlight=false;
+  imgIndex=-1;
   posX=0;
   posY=0;
   szX=0;
@@ -22,7 +23,7 @@ CButton::~CButton(){
   activeFocus = NULL;
   display = NULL;
   font    = NULL;
-  if(texture!=NULL) SDL_DestroyTexture(texture);
+  image   = NULL;
 }
 
 bool CButton::logic(int mouseX, int mouseY, int mouseButton){
@@ -66,11 +67,19 @@ void CButton::render(){
   }
 
   //Draw button
-  if(texture!=NULL){
-    SDL_QueryTexture(texture,NULL,NULL,&r.w,&r.h);
+  if(imgIndex>-1){
+    r=image->getRect(imgIndex);
+    if(r.w>=szX-2){
+      r.w=szX-2;
+      r.h=szX-2;
+    }
+    if(r.h>=szY-2){
+      r.w=szY-2;
+      r.h=szY-2;
+    }
     r.x=posX+(szX-r.w)/2;
     r.y=posY+(szY-r.h)/2;
-    SDL_RenderCopy(display->renderer,texture,NULL,&r);
+    image->render(display->renderer,imgIndex,r.x,r.y,r.w,r.h);
   } else {
     r.x=posX+(szX-textWidth)/2;
     r.y=posY+(szY-textHeight)/2;
@@ -102,6 +111,17 @@ void CButton::setFocus(CActiveFocus* f){
 
 void CButton::setFont(CFont* f){
   font=f;
+}
+
+void CButton::setGfx(CGfxCollection* g) {
+  image=g->icons;
+}
+
+void CButton::setImage(int index) {
+  if(index<0) imgIndex=-1;
+  if(image==NULL) imgIndex=-1;
+  if(index>=image->size()) imgIndex=-1;
+  imgIndex=index;
 }
 
 

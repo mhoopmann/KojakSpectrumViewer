@@ -4,7 +4,8 @@ CViewer::CViewer(){
   activeFocus=NULL;
   display=NULL;
   input=NULL;
-  state=0;
+  state=1;
+  firstOpen=true;
   quitter=false;
   focused=true;
 }
@@ -15,7 +16,8 @@ CViewer::CViewer(CDisplay* d, CInput* inp){
   input=inp;
   sg.setDisplay(d);
   sg.setInput(inp);
-  state=0;
+  state=1;
+  firstOpen=true;
   quitter=false;
   focused=true;
 }
@@ -50,6 +52,8 @@ void CViewer::init(){
   sg.szX=500;
   sg.szY=300;  
 
+  gfx.loadGfx("Fonts\\icons.bmp",display->renderer);
+
   font.setRenderer(display->renderer);
   font.loadFont("Fonts\\Carlito-Regular.ttf");
 
@@ -80,6 +84,7 @@ void CViewer::init(){
 
   fileDlg.setDisplay(display);
   fileDlg.setFont(&font);
+  fileDlg.setGfx(&gfx);
   fileDlg.init();
   
   //data.readPepXML("C:\\Users\\mhoopman\\Documents\\Software Development\\KojakSpectrumViewer\\KojakSpectrumViewer\\Release\\112015-Standard-A-01.pep.xml");
@@ -97,6 +102,7 @@ void CViewer::init(){
 
   tb.setDisplay(display);
   tb.setFont(&font);
+  tb.setGfx(&gfx);
   tb.setInput(input);
   tb.init();
 
@@ -144,7 +150,7 @@ bool CViewer::logic(){
     val=fileDlg.logic(mouseX,mouseY,mouseButton,mouseButton1);
     switch(val){
     case 1:
-      state=0;
+      if(!firstOpen) state=0;
       return true;
     case 2:
       state=0;
@@ -155,6 +161,7 @@ bool CViewer::logic(){
       sortDlg.clear();
       sortDlg.init(&dt);
       resetSpectrum();
+      firstOpen=false;
       return true;
     default:
       return true;
@@ -286,7 +293,6 @@ void CViewer::processEvent(SDL_Event& e){
 }
 
 bool CViewer::render(){
-  char str[32];
   SDL_Rect r;
 
   if(state==1){
@@ -326,8 +332,12 @@ void CViewer::resetSpectrum(){
   scanNumber = data[dataIndex].scanNumber;
   pepBox.setPSM(data[dataIndex]);
   Spectrum spec = data.getSpectrum(dataIndex);
+  pepBox.scanNumber = spec.getScanNumber();
+  pepBox.mass = data[dataIndex].mass;
+  pepBox.charge = (int)data[dataIndex].charge;
   sg.spectrum.clear();
   for(int i=0;i<spec.size();i++){
+    if(spec[i].intensity==0) continue;
     sg.spectrum.add(spec[i].mz,(double)spec[i].intensity);
   }
   sg.resetView();

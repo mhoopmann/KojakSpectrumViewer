@@ -10,30 +10,34 @@ CPeptideBox::CPeptideBox(){
   szX=0;
   szY=0;
 
+  charge=0;
+  scanNumber=0;
+  mass=0;
+
   cbPepA.posX=4;
-  cbPepA.posY=4;
-  cbPepA.setSize(12);
+  cbPepA.posY=20;
+  cbPepA.sz=12;
   cbPepA.caption="PEPTIDEAR";
   cbPepA.checked=true;
 
   cbPepB.posX=4;
-  cbPepB.posY=24;
-  cbPepB.setSize(12);
+  cbPepB.posY=40;
+  cbPepB.sz=12;
   cbPepB.caption="SOMEOTHERPEPK";
 
   for(int i=0;i<3;i++){
     for(int j=0;j<6;j++){
       cbIons[i][j].posX=j*16+16;
-      cbIons[i][j].posY=i*16+64;
-      cbIons[i][j].setSize(12);
+      cbIons[i][j].posY=i*16+69;
+      cbIons[i][j].sz=12;
     }
   }
 
   fragPepA.posX=4;
-  fragPepA.posY=108;
+  fragPepA.posY=113;
 
   fragPepB.posX=4;
-  fragPepB.posY=108;
+  fragPepB.posY=113;
 
   showScrollbarV=false;
   scrollLockV=false;
@@ -66,10 +70,10 @@ void CPeptideBox::fixLayout(){
   display->getWindowSize(w,h);  
   
   //Vertical Scrolling
-  viewSize = h-152;
+  viewSize = h-157;
   contentSize = 0; //size of visible fragment lists
-  if(cbPepA.checked) contentSize+=(fragPepA.size()+1)*12+20; 
-  if(cbPepB.active && cbPepB.checked) contentSize+=(fragPepB.size()+1)*12+20;
+  if(cbPepA.checked) contentSize+=(fragPepA.size()+1)*14+23; 
+  if(cbPepB.active && cbPepB.checked) contentSize+=(fragPepB.size()+1)*14+23;
   if(viewSize>0 && contentSize>viewSize) {
     showScrollbarV=true;
     
@@ -84,7 +88,7 @@ void CPeptideBox::fixLayout(){
 
   //Horizontal Scrolling
   viewSize = szX-14;
-  contentSize = 42; //size of visible fragment lists
+  contentSize = 54; //size of visible fragment lists
   for(x=0;x<3;x++){
     for(y=0;y<6;y++){
       if(cbIons[x][y].checked) contentSize+=56;
@@ -122,7 +126,7 @@ int CPeptideBox::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton
 
   if(mouseButton1 && showScrollbarV){
     //grabbed scrollbar
-    if(mouseX>=szX-8 && mouseX<=szX-2 && mouseY>=110+scrollOffsetV && mouseY<=110+scrollOffsetV+thumbHeightV){
+    if(mouseX>=szX-8 && mouseX<=szX-2 && mouseY>=115+scrollOffsetV && mouseY<=115+scrollOffsetV+thumbHeightV){
       if(scrollLockV){
         //printf("Scrolled: %d %d\n",mouseY, lastMouseY);
         scrollOffsetV+=(mouseY-lastMouseY);
@@ -212,6 +216,7 @@ void CPeptideBox::render(int x, int y){
   SDL_Rect origVP;
   SDL_Rect vp;
   SDL_Rect r;
+  char str[64];
   int fontSize=font->fontSize;
 
   SDL_RenderGetViewport(display->renderer,&origVP);
@@ -227,24 +232,37 @@ void CPeptideBox::render(int x, int y){
   r=vp;
   r.x=0;
   r.y=0;
-  SDL_SetRenderDrawColor(display->renderer,247,247,247,255);
+  SDL_SetRenderDrawColor(display->renderer,255,255,255,255);
   SDL_RenderFillRect(display->renderer,&r);
 
   //Render everything in the viewport
+  //Render the scan information
+  sprintf(str,"Scan: %d,  Mass: %.4lf Da,  Charge: %d+", scanNumber,mass, charge);
+  font->fontSize=12;
+  font->render(4,4,str,1);
+
+  //Render peptide checkboxes
   cbPepA.render();
   if(cbPepB.active) cbPepB.render();
 
+  //Render link-lines
+  if(rLinkA.x>-1){
+    SDL_SetRenderDrawColor(display->renderer,32,32,32,255);
+    SDL_RenderDrawLine(display->renderer,rLinkA.x,rLinkA.y,rLinkA.x,rLinkA.y+rLinkA.h);
+    SDL_RenderDrawLine(display->renderer,rLinkB.x,rLinkB.y,rLinkB.x,rLinkB.y+rLinkB.h);
+    SDL_RenderDrawLine(display->renderer,rLinkA.x,rLinkA.y+rLinkA.h,rLinkB.x,rLinkB.y);
+  }
+
   font->fontSize=10;
-  font->render(20,40,"alpha",1);
-  font->render(4,64,"1+",1);
-  font->render(4,80,"2+",1);
-  font->render(4,96,"3+",1);
-  font->render(20,50,"a",1);
-  font->render(36,50,"b",1);
-  font->render(52,50,"c",1);
-  font->render(68,50,"x",1);
-  font->render(84,50,"y",1);
-  font->render(100,50,"z",1);
+  font->render(4,69,"1+",1);
+  font->render(4,85,"2+",1);
+  font->render(4,101,"3+",1);
+  font->render(20,55,"a",1);
+  font->render(36,55,"b",1);
+  font->render(52,55,"c",1);
+  font->render(68,55,"x",1);
+  font->render(84,55,"y",1);
+  font->render(100,55,"z",1);
   for(int i=0;i<3;i++){
     for(int j=0;j<6;j++){
       cbIons[i][j].render();
@@ -254,9 +272,9 @@ void CPeptideBox::render(int x, int y){
   //New viewport for scrollable content
   //also excludes area that scroll bars will occupy
   vp.x=posX+4;
-  vp.y=posY+110;
+  vp.y=posY+115;
   vp.w=origVP.w-posX-14;
-  vp.h=origVP.h-posY-120;
+  vp.h=origVP.h-posY-125;
   SDL_RenderSetViewport(display->renderer,&vp);
 
   //set the scrollbar offsets
@@ -270,13 +288,13 @@ void CPeptideBox::render(int x, int y){
     else fragPepB.posX=0;
     if(showScrollbarV) fragPepB.posY=0-(int)(scrollOffsetV*scrollJumpV);
     else fragPepB.posY=0;
-    if(cbPepA.checked) fragPepB.posY+=(fragPepA.size()+1)*12+20;
+    if(cbPepA.checked) fragPepB.posY+=(fragPepA.size()+1)*14+23;
     fragPepB.render();
   }
 
   //expand viewport for scrollbars
   vp.w=origVP.w-posX-4;
-  vp.h=origVP.h-posY-110;
+  vp.h=origVP.h-posY-115;
   SDL_RenderSetViewport(display->renderer,&vp);
 
   //draw the scrollbar
@@ -347,9 +365,22 @@ void CPeptideBox::setPSM(kvPSM& psm){
   size_t i,j;
   char str[6];
 
+  rLinkA.x=-1;
+  rLinkB.x=-1;
+
   cbPepA.caption.clear();
   for(i=0;i<psm.peptideA.size();i++){
     cbPepA.caption+=psm.peptideA[i];
+    if(psm.linkA==(int)i){
+      rLinkA.x=cbPepA.posX+cbPepA.sz+cbPepA.getCaptionWidth();
+      rLinkA.y=cbPepA.posY+11;
+      rLinkA.h=4;
+    }
+    if(psm.linkType==1 && psm.linkB==(int)i){
+      rLinkB.x=cbPepA.posX+cbPepA.sz+cbPepA.getCaptionWidth();
+      rLinkB.y=cbPepA.posY+15;
+      rLinkB.h=-4;
+    }
     for(j=0;j<psm.modA->size();j++){
       if(psm.modA->at(j).pos==i){
         sprintf(str,"[%.0lf]",psm.modA->at(j).mass);
@@ -371,6 +402,11 @@ void CPeptideBox::setPSM(kvPSM& psm){
     cbPepB.caption.clear();
     for(i=0;i<psm.peptideB.size();i++){
       cbPepB.caption+=psm.peptideB[i];
+      if(psm.linkB==(int)i){
+        rLinkB.x=cbPepB.posX+cbPepB.sz+cbPepB.getCaptionWidth();
+        rLinkB.y=cbPepB.posY-5;
+        rLinkB.h=4;
+      }
       for(j=0;j<psm.modB->size();j++){
         if(psm.modB->at(j).pos==i){
           sprintf(str,"[%.0lf]",psm.modB->at(j).mass);

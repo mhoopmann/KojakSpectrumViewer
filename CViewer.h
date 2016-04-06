@@ -6,6 +6,7 @@
 #include "CDisplay.h"
 #include "CFileOpen.h"
 #include "CFont.h"
+#include "CGfxCollection.h"
 #include "CInput.h"
 #include "CPeptideBox.h"
 #include "CResults.h"
@@ -39,6 +40,7 @@ private:
 
   CFileOpen fileDlg;
   CFont font;
+  CGfxCollection gfx;
   CPeptideBox pepBox;
   CSpectrumGraph sg;
   CTable dt;
@@ -52,6 +54,7 @@ private:
 
   CResults data;
   
+  bool firstOpen;
   bool quitter;
   bool focused;
   int dataIndex;

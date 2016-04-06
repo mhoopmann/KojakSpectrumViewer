@@ -19,6 +19,10 @@ public:
   int szX;
   int szY;
 
+  int charge;
+  int scanNumber;
+  double mass;
+
   bool            checkSeries (int charge, int ion);
   void            fixLayout   ();
   CFragmentLists* getIonSeries(bool pepB=false);
@@ -42,6 +46,9 @@ private:
 
   CFragmentLists fragPepA;
   CFragmentLists fragPepB;
+
+  SDL_Rect rLinkA;
+  SDL_Rect rLinkB;
 
   string sPepA;
   string sPepB;

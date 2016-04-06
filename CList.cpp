@@ -11,12 +11,14 @@ CList::CList(){
   szY=0;
   display = NULL;
   font = NULL;
+  icons = NULL;
   items = new vector<sListItem>;
 }
 
 CList::~CList(){
   display = NULL;
   font = NULL;
+  icons = NULL;
   delete items;
 }
 
@@ -24,9 +26,10 @@ sListItem& CList::operator[](const int& index){
   return items->at(index);
 }
 
-bool CList::addItem(char* str, int value){
+bool CList::addItem(char* str, int value, int icon){
   sListItem s;
   s.item=str;
+  s.icon=icon;
   s.value=value;
   items->push_back(s);
   fixLayout();
@@ -37,6 +40,7 @@ void CList::clear(){
   items->clear();
   selected=-1;
   showScrollbarV=false;
+  fixLayout();
 }
 
 void CList::clearSelected(){
@@ -69,7 +73,11 @@ void CList::fixLayout(){
     scrollThumbSpace = viewSize-thumbHeightV;
     scrollJumpV = (double)scrollTrackSpace/scrollThumbSpace;
     scrollOffsetV = 0;
-  } else showScrollbarV=false;
+  } else {
+    scrollOffsetV = 0;
+    scrollJumpV = 0;
+    showScrollbarV=false;
+  }
  
 }
 
@@ -120,6 +128,7 @@ int CList::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
     i=mouseY-posY+(int)(scrollOffsetV*scrollJumpV);
     i/=szHeight;
     if(i<(int)items->size()) selected = i;
+    else selected = -1;
     return 2;
   } 
 
@@ -134,6 +143,7 @@ void CList::render(){
   SDL_Rect origVP;
   SDL_Rect vp;
   size_t i;
+  int w,h;
   int fontSize=font->fontSize;
 
   SDL_RenderGetViewport(display->renderer,&origVP);
@@ -164,7 +174,20 @@ void CList::render(){
       SDL_SetRenderDrawColor(display->renderer,32,128,128,255);
       SDL_RenderFillRect(display->renderer,&r);
     }
-    font->render(r.x+2,r.y+1,items->at(i).item);
+    if(items->at(i).icon>-1){
+      switch(szFont){
+      case 8: w=6; h=6; break;
+      case 10: w=8; h=8; break;
+      case 12: w=10; h=10; break;
+      case 14: w=12; h=12; break;
+      case 16: w=16; h=16; break;
+      default: w=0; h=0; break;
+      }
+      icons->render(display->renderer,items->at(i).icon,r.x+2,r.y+1,w,h);
+      font->render(r.x+w+4,r.y+1,items->at(i).item);
+    } else {
+      font->render(r.x+2,r.y+1,items->at(i).item);
+    }
   }
 
   //Draw scrollbar
@@ -195,6 +218,10 @@ void CList::setDisplay(CDisplay* d){
 
 void CList::setFont(CFont* f){
   font=f;
+}
+
+void CList::setGfx(CGfxCollection* g){
+  icons=g->icons;
 }
 
 bool CList::setSelected(int index){

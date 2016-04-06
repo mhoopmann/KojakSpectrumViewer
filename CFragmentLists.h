@@ -71,6 +71,7 @@ private:
   double peptideMass;
 
   kvColor colorIons[3][6];
+  kvColor colorTable[3];
 
 };
 

@@ -34,7 +34,7 @@ void CSortFilter::init(CTable* t){
 
   cbSortAsc.posX=310;
   cbSortAsc.posY=20;
-  cbSortAsc.setSize(16);
+  cbSortAsc.sz=16;
   cbSortAsc.caption="Ascending";
   cbSortAsc.checked=false;
 
@@ -51,7 +51,6 @@ void CSortFilter::init(CTable* t){
   size_t i;
   for(i=0;i<dt->size(true);i++){
     ddSort.addItem(dt->col(i).header);
-    printf("Added: %s\n",&dt->col(i).header[0]);
   }
 
 }

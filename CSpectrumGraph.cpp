@@ -103,12 +103,12 @@ bool CSpectrumGraph::render(CPeptideBox& p){
 
   //Calculate scale to fit window
   ppuX = (double)(szX-20)/(highX-lowX);
-  if(highY>0) ppuY = (double)(szY-60)/highY;
+  if(highY>0) ppuY = (double)(szY-65)/highY;
   else ppuY=0;
 
   //Draw spectrum
   SDL_SetRenderDrawColor(display->renderer,color[1].r,color[1].g,color[1].b,255);
-  y=posY+szY-10;
+  y=posY+szY-15;
   switch(spectrum.type){
     case grBar:
       for(i=0;i<spectrum.size();i++) {
@@ -119,8 +119,8 @@ bool CSpectrumGraph::render(CPeptideBox& p){
       break;
     case grLine:
       x2=0;
-      y2=posY+szY-10;
-      m=posY+szY-10;
+      y2=posY+szY-15;
+      m=posY+szY-15;
       for(i=0;i<spectrum.size();i++) {
         x=posX+(int)((spectrum[i].x-lowX)*ppuX)+10;
         y=m-(int)(spectrum[i].y*ppuY);
@@ -141,24 +141,24 @@ bool CSpectrumGraph::render(CPeptideBox& p){
 
   //Color fragment ions, peptide A
   font->fontSize=10;
-  y=posY+szY-10;
+  y=posY+szY-15;
   if(p.showPeptide(true)){
     f=p.getIonSeries();
     for(i=0;i<6;i++){
       for(j=0;j<3;j++){
-        if(!p.checkSeries(j,i)) continue;
+        if(!p.checkSeries((int)j,(int)i)) continue;
         for(k=0;k<f->size();k++){
-          if(i==0) m=spectrum.findMass(f->getAIon(j+1,k));
-          else if(i==1) m=spectrum.findMass(f->getBIon(j+1,k));
-          else if(i==2) m=spectrum.findMass(f->getCIon(j+1,k));
-          else if(i==3) m=spectrum.findMass(f->getXIon(j+1,k));
-          else if(i==4) m=spectrum.findMass(f->getYIon(j+1,k));
-          else if(i==5) m=spectrum.findMass(f->getZIon(j+1,k));
+          if(i==0) m=spectrum.findMass(f->getAIon((int)j+1,k));
+          else if(i==1) m=spectrum.findMass(f->getBIon((int)j+1,k));
+          else if(i==2) m=spectrum.findMass(f->getCIon((int)j+1,k));
+          else if(i==3) m=spectrum.findMass(f->getXIon((int)j+1,k));
+          else if(i==4) m=spectrum.findMass(f->getYIon((int)j+1,k));
+          else if(i==5) m=spectrum.findMass(f->getZIon((int)j+1,k));
           if(m<0) {
-            f->setMatch(i,j,k,false);
+            f->setMatch((int)i,(int)j,k,false);
             continue;
           }
-          f->setMatch(i,j,k,true);
+          f->setMatch((int)i,(int)j,k,true);
           if(spectrum[m].x<lowX || spectrum[m].x>highX) continue;
           x=posX+(int)((spectrum[m].x-lowX)*ppuX)+10;
           SDL_SetRenderDrawColor(display->renderer,colorIons[j][i].r,colorIons[j][i].g,colorIons[j][i].b,255);
@@ -186,19 +186,19 @@ bool CSpectrumGraph::render(CPeptideBox& p){
   if(f!=NULL && p.showPeptide(false)){
     for(i=0;i<6;i++){
       for(j=0;j<3;j++){
-        if(!p.checkSeries(j,i)) continue;
+        if(!p.checkSeries((int)j,(int)i)) continue;
         for(k=0;k<f->size();k++){
-          if(i==0) m=spectrum.findMass(f->getAIon(j+1,k));
-          else if(i==1) m=spectrum.findMass(f->getBIon(j+1,k));
-          else if(i==2) m=spectrum.findMass(f->getCIon(j+1,k));
-          else if(i==3) m=spectrum.findMass(f->getXIon(j+1,k));
-          else if(i==4) m=spectrum.findMass(f->getYIon(j+1,k));
-          else if(i==5) m=spectrum.findMass(f->getZIon(j+1,k));
+          if(i==0) m=spectrum.findMass(f->getAIon((int)j+1,k));
+          else if(i==1) m=spectrum.findMass(f->getBIon((int)j+1,k));
+          else if(i==2) m=spectrum.findMass(f->getCIon((int)j+1,k));
+          else if(i==3) m=spectrum.findMass(f->getXIon((int)j+1,k));
+          else if(i==4) m=spectrum.findMass(f->getYIon((int)j+1,k));
+          else if(i==5) m=spectrum.findMass(f->getZIon((int)j+1,k));
           if(m<0) {
-            f->setMatch(i,j,k,false);
+            f->setMatch((int)i,(int)j,k,false);
             continue;
           }
-          f->setMatch(i,j,k,true);
+          f->setMatch((int)i,(int)j,k,true);
           if(spectrum[m].x<lowX || spectrum[m].x>highX) continue;
           x=posX+(int)((spectrum[m].x-lowX)*ppuX)+10;
           SDL_SetRenderDrawColor(display->renderer,colorIons[j][i].r,colorIons[j][i].g,colorIons[j][i].b,255);
@@ -224,30 +224,42 @@ bool CSpectrumGraph::render(CPeptideBox& p){
   //Draw x-axis
   if(posX+szX-10>posX+10){
     SDL_SetRenderDrawColor(display->renderer,color[2].r,color[2].g,color[2].b,255);
-    SDL_RenderDrawLine(display->renderer,posX+10,posY+szY-10,posX+szX-10,posY+szY-10);
-    font->setFontSize(8);
+    SDL_RenderDrawLine(display->renderer,posX+10,posY+szY-15,posX+szX-10,posY+szY-15);
+    font->fontSize=10;
     sprintf(str,"%.2lf",lowX);
-    font->render(10,posY+szY-9,str,1);
+    font->render(10,posY+szY-12,str,1);
+    SDL_RenderDrawLine(display->renderer,posX+10,posY+szY-15,posX+10,posY+szY-13);
     sprintf(str,"%.2lf",highX);
-    font->render(posX+szX-30,posY+szY-9,str,1);
+    font->render(posX+szX-font->getStringWidth(str)-10,posY+szY-12,str,1);
+    SDL_RenderDrawLine(display->renderer,posX+szX-10,posY+szY-15,posX+szX-10,posY+szY-13);
     for(i=szX/5+posX+10;i<szX+posX-20;i+=szX/5){
       sprintf(str,"%.2lf",(double)i/ppuX+lowX);
-      font->render(i+10,posY+szY-9,str,1);
+      font->render((int)i+10-font->getStringWidth(str)/2,posY+szY-12,str,1);
+      SDL_RenderDrawLine(display->renderer,(int)i+10,posY+szY-15,(int)i+10,posY+szY-13);
     }
+  }
+
+  //Draw y-axis
+  if(posY+szY-15>posY+50){
+    SDL_SetRenderDrawColor(display->renderer,color[2].r,color[2].g,color[2].b,255);
+    SDL_RenderDrawLine(display->renderer,posX+10,posY+szY-15,posX+10,posY+50);
+    SDL_RenderDrawLine(display->renderer,posX+8,posY+50,posX+10,posY+50);
+    sprintf(str,"%.1e",highY);
+    font->render(2,posY+38,str,1);
   }
 
   //Draw zoom window
   if(zoomLock){
     r.x=lockPos1;
     r.w=lockPos2-lockPos1;
-    r.y=posY+10;
-    r.h=szY-20;
+    r.y=posY+50;
+    r.h=szY-65;
     SDL_SetRenderDrawColor(display->renderer,0,0,0,128);
     SDL_RenderFillRect(display->renderer,&r);
     
     SDL_SetRenderDrawColor(display->renderer,0,0,0,255);
-    SDL_RenderDrawLine(display->renderer,lockPos1,posY+10,lockPos1,posY+szY-10);
-    SDL_RenderDrawLine(display->renderer,lockPos2,posY+10,lockPos2,posY+szY-10);
+    SDL_RenderDrawLine(display->renderer,lockPos1,posY+50,lockPos1,posY+szY-15);
+    SDL_RenderDrawLine(display->renderer,lockPos2,posY+50,lockPos2,posY+szY-15);
   }
 
   font->fontSize=fontSize;

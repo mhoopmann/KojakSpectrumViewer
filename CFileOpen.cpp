@@ -17,18 +17,10 @@ CFileOpen::~CFileOpen(){
 
 void CFileOpen::buildFileList(char* path){
 
-  printf("In build filelist\n");
-  fflush(stdout);
-
   vFileList.clear();
   kvFileElement f;
   DIR* directory = opendir(path);
-  if(directory==NULL) {
-    printf("null dir\n");
-    return;
-  } else {
-    printf("not null: drive = %d\n",_getdrive());
-  }
+  if(directory==NULL) return;
   dirent* entry = NULL;
 
   while(entry = readdir(directory)){
@@ -40,33 +32,41 @@ void CFileOpen::buildFileList(char* path){
     } else {
       if(f.name.rfind(".")!=string::npos){
         f.ext=f.name.substr(f.name.rfind(".",string::npos));
+        if(f.ext.compare(".xml")==0){
+          printf("%s: %d\n",&f.name[0],f.name.rfind(".pep.xml"));
+          if(f.name.rfind(".pep.xml")==f.name.size()-8){
+            f.ext="pep.xml";
+          }
+        }
       } else {
         f.ext.clear();
       }
       f.type=1;
     }
-    vFileList.push_back(f);
+    if(f.type==0 || f.ext.compare("pep.xml")==0) vFileList.push_back(f);
   }
   closedir(directory);
 
   listFile.clear();
   size_t i;
-  //directories on top -- need icons!
+  //directories on top
   for(i=0;i<vFileList.size();i++){
-    if(vFileList[i].type==0) listFile.addItem(&vFileList[i].name[0],i);
+    if(vFileList[i].type==0) listFile.addItem(&vFileList[i].name[0],(int)i,0);
   }
   //then files
   for(i=0;i<vFileList.size();i++){
-    if(vFileList[i].type==1) listFile.addItem(&vFileList[i].name[0],i);
+    if(vFileList[i].type==1) listFile.addItem(&vFileList[i].name[0],(int)i);
   }
+
+  fixLayout();
 
 }
 
 void CFileOpen::fixLayout(){
   int h,w;
   display->getWindowSize(w,h);
-  tbPath.szX=w-171;
-  butDirUp.posX=w-36;
+  tbPath.szX=w-167;
+  butDirUp.posX=w-40;
   butLoad.posX=w-74;
   butLoad.posY=h-42;
   listFile.szX=w-listFile.posX-10;
@@ -107,17 +107,17 @@ void CFileOpen::init(){
 
   tbPath.posX=130;
   tbPath.posY=20;
-  tbPath.szX=600;
+  tbPath.szX=596;
   tbPath.szY=20;
   tbPath.noScroll=true;
   tbPath.setSize(14);
   tbPath.addText(cwd);
 
-  butDirUp.posX=735;
+  butDirUp.posX=731;
   butDirUp.posY=20;
-  butDirUp.szX=26;
-  butDirUp.szY=20;
-  butDirUp.setCaption("^");
+  butDirUp.szX=30;
+  butDirUp.szY=26;
+  butDirUp.setImage(4);
 
   listDir.posX=130;
   listDir.posY=60;
@@ -142,7 +142,7 @@ void CFileOpen::init(){
   listFile.posY=60;
   listFile.szX=250;
   listFile.szY=450;
-  listFile.setSize(12);
+  listFile.setSize(14);
 
   mode=0;
   fixLayout();
@@ -175,6 +175,7 @@ int CFileOpen::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
     case 1:
       return 0;
     case 2:
+      if(listFile.getSelected()<0) return 0;
       if(vFileList[listFile.getSelectedItem().value].type==0){
         _chdir(&vFileList[listFile.getSelectedItem().value].name[0]);
         buildFileList(".");
@@ -193,6 +194,7 @@ int CFileOpen::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
     case 1:
       return 0;
     case 2:
+      if(listDir.getSelected()<0) return 0;
       if(_chdrive(listDir.getSelectedItem().value)==0) {
         buildFileList(".");
         getcwd(cwd,1024);
@@ -277,4 +279,9 @@ void CFileOpen::setFont(CFont* f){
   listDir.setFont(f);
   listFile.setFont(f);
   tbPath.setFont(f);
+}
+
+void CFileOpen::setGfx(CGfxCollection* g){
+  listFile.setGfx(g);
+  butDirUp.setGfx(g);
 }

@@ -76,7 +76,7 @@ void CTextBox::fixLayout(){
   
   //Vertical Scrolling
   viewSize = szY-10;
-  contentSize = buffer.size()*szHeight+2; //size of entire text content
+  contentSize = (int)buffer.size()*szHeight+2; //size of entire text content
   if(viewSize>0 && contentSize>viewSize) {
     showScrollbarV=true;
     

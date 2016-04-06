@@ -44,21 +44,21 @@ void CInput::setButton(Uint8 k, bool b){
     case SDL_BUTTON_LEFT:   
       buttonState[0]=b; 
       if(!b) {
-        printf("Button 1 release\n");
+        //printf("Button 1 release\n");
         lastButton=1; 
       }
       break;
     case SDL_BUTTON_RIGHT:  
       buttonState[1]=b; 
       if(!b) {
-        printf("Button 2 release\n");
+        //printf("Button 2 release\n");
         lastButton=2; 
       }
       break;
     case SDL_BUTTON_MIDDLE: 
       buttonState[2]=b; 
       if(!b) {
-        printf("Button 3 release\n");
+        //printf("Button 3 release\n");
         lastButton=3; 
       }
       break;

@@ -35,7 +35,7 @@ bool CEditBox::logic(int mouseX, int mouseY, int mouseButton){
       int x=mouseX-posX-4;
       cursor=x/9;
       if(cursor<0) cursor=0;
-      if(cursor>(int)content.size()) cursor=content.size();
+      if(cursor>(int)content.size()) cursor=(int)content.size();
 
       return true;
     }

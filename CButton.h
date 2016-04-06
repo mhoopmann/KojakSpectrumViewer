@@ -3,6 +3,8 @@
 
 #include "CActiveFocus.h"
 #include "CDisplay.h"
+#include "CGfxCollection.h"
+#include "CGraphic.h"
 #include "CFont.h"
 #include <string>
 
@@ -12,8 +14,6 @@ class CButton{
 public:
   CButton();
   ~CButton();
-
-  SDL_Texture* texture;  //Image or text for button
   
   bool  active;
   int   posX;
@@ -28,18 +28,22 @@ public:
   void setDisplay   (CDisplay* d);
   void setFocus     (CActiveFocus* f);
   void setFont      (CFont* f);
+  void setGfx       (CGfxCollection* g);
+  void setImage     (int index);
   
 
 private:
 
   CDisplay* display;
   CFont*    font;
+  CGraphic* image;  //Image or text for button
 
   CActiveFocus* activeFocus;
 
   string  caption;
   bool    lockButton;
   bool    highlight;
+  int     imgIndex;
   int     textWidth;
   int     textHeight;
 

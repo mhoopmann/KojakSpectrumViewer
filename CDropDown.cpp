@@ -51,7 +51,7 @@ void CDropDown::fixLayout(){
   
   //Vertical Scrolling
   viewSize = szDrop-2;
-  contentSize = items.size()*15; //size of entire text content
+  contentSize = (int)items.size()*15; //size of entire text content
   if(viewSize>0 && contentSize>viewSize) {
     showScrollbarV=true;
     

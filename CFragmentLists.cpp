@@ -90,7 +90,7 @@ void CFragmentLists::allocate(){
   int j,k;
 
   deallocate();
-  ionCount=peptide.size()-1;
+  ionCount=(int)peptide.size()-1;
 
   aMatch=new bool*[3];
   bMatch=new bool*[3];
@@ -145,13 +145,11 @@ void CFragmentLists::calcIons(int link, int link2, double modMass){
 
   int b;
 	int i;
-  int j;
   int y;
 	double mMass;
-  char str[32];
 
   //set up boundaries
-  int ionCount=peptide.size()-1; //pep1Len-1;
+  int ionCount=(int)peptide.size()-1; //pep1Len-1;
   b=0;
   y=ionCount-1;
 
@@ -370,14 +368,12 @@ bool CFragmentLists::render(){
       if(k==0)strcpy(str,"+");
       else sprintf(str,"%d+",k+1);
       if(bShowIons[k][j]) {
-        r.x=posX+n;
-        r.y=posY+5;
-        r.w=56;
-        r.h=15;
-        SDL_SetRenderDrawColor(display->renderer,58,58,58,255);
+        r.x=posX+n+1;
+        r.y=posY+5+1;
+        r.w=54; //true width=56
+        r.h=16; //true height=18
+        SDL_SetRenderDrawColor(display->renderer,colorTable[0].r,colorTable[0].g,colorTable[0].b,255);
         SDL_RenderFillRect(display->renderer,&r);
-        SDL_SetRenderDrawColor(display->renderer,234,234,234,255);
-        SDL_RenderDrawRect(display->renderer,&r);
         switch(j){
           case 0: sprintf(str2,"a%s",str); break;
           case 1: sprintf(str2,"b%s",str); break;
@@ -389,36 +385,30 @@ bool CFragmentLists::render(){
             break;
         }
         i=font->getStringWidth(str2);
-        font->render(posX+n+28-i/2,posY+5,str2,0);
+        font->render(posX+n+28-i/2,posY+8,str2,0);
         n+=56;
       }
     }
     if(j==2) {
-      r.x=posX+n; 
-      r.y=posY+5; 
-      r.w=14; 
-      r.h=15;
-      SDL_SetRenderDrawColor(display->renderer,58,58,58,255);
+      r.x=posX+n+1; 
+      r.y=posY+5+1; 
+      r.w=16; 
+      r.h=16;
+      SDL_SetRenderDrawColor(display->renderer,colorTable[0].r,colorTable[0].g,colorTable[0].b,255);
       SDL_RenderFillRect(display->renderer,&r);
-      SDL_SetRenderDrawColor(display->renderer,234,234,234,255);
-      SDL_RenderDrawRect(display->renderer,&r);
-      font->render(posX+n+3,posY+5,"#",0);
-      n+=14;
+      font->render(posX+n+5,posY+9,"#",0);
+      n+=18;
       
-      r.x=posX+n; 
-      SDL_SetRenderDrawColor(display->renderer,58,58,58,255);
+      r.x=posX+n+1; 
+      SDL_SetRenderDrawColor(display->renderer,colorTable[0].r,colorTable[0].g,colorTable[0].b,255);
       SDL_RenderFillRect(display->renderer,&r);
-      SDL_SetRenderDrawColor(display->renderer,234,234,234,255);
-      SDL_RenderDrawRect(display->renderer,&r);
-      n+=14;
+      n+=18;
 
-      r.x=posX+n; 
-      SDL_SetRenderDrawColor(display->renderer,58,58,58,255);
+      r.x=posX+n+1; 
+      SDL_SetRenderDrawColor(display->renderer,colorTable[0].r,colorTable[0].g,colorTable[0].b,255);
       SDL_RenderFillRect(display->renderer,&r);
-      SDL_SetRenderDrawColor(display->renderer,234,234,234,255);
-      SDL_RenderDrawRect(display->renderer,&r);
-      font->render(posX+n+3,posY+5,"#",0);
-      n+=14;
+      font->render(posX+n+5,posY+9,"#",0);
+      n+=18;
     }
   }
 
@@ -463,11 +453,11 @@ bool CFragmentLists::render(){
             default:
               break;
           }
-          r.x=posX+n;
-          r.y=posY+i*12+20;
-          r.w=56;
-          r.h=12;
-          SDL_SetRenderDrawColor(display->renderer,234,234,234,255);
+          r.x=posX+n+1;
+          r.y=posY+i*14+24;
+          r.w=54; //true is 56
+          r.h=12; //true is 14
+          SDL_SetRenderDrawColor(display->renderer,colorTable[2].r,colorTable[2].g,colorTable[2].b,255);
           switch(j){
             case 0: if(aMatch[k][i]) SDL_SetRenderDrawColor(display->renderer,colorIons[k][j].r,colorIons[k][j].g,colorIons[k][j].b,255); break;
             case 1: if(bMatch[k][i]) SDL_SetRenderDrawColor(display->renderer,colorIons[k][j].r,colorIons[k][j].g,colorIons[k][j].b,255); break;
@@ -480,35 +470,37 @@ bool CFragmentLists::render(){
           }
           SDL_RenderFillRect(display->renderer,&r);
           q=font->getStringWidth(str);
-          font->render(posX+n+28-q/2,posY+i*12+20,str,1);
+          font->render(posX+n+28-q/2,posY+i*14+25,str,1);
           n+=56;
         }
       }
       if(j==2) {
-        r.x=posX+n; 
-        r.y=posY+i*12+20; 
-        r.w=14; 
+        r.x=posX+n+1; 
+        r.y=posY+i*14+24; 
+        r.w=16; 
         r.h=12;
-        SDL_SetRenderDrawColor(display->renderer,234,234,234,255);
+        SDL_SetRenderDrawColor(display->renderer,colorTable[1].r,colorTable[1].g,colorTable[1].b,255);
         SDL_RenderFillRect(display->renderer,&r);
         sprintf(str,"%d",i+1);
         q=font->getStringWidth(str);
-        font->render(posX+n+7-q/2,posY+i*12+20,str,1);
-        n+=14;
+        font->render(posX+n+8-q/2,posY+i*14+25,str,1);
+        n+=18;
 
-        r.x=posX+n; 
+        r.x=posX+n+1; 
+        SDL_SetRenderDrawColor(display->renderer,colorTable[0].r,colorTable[0].g,colorTable[0].b,255);
         SDL_RenderFillRect(display->renderer,&r);
         sprintf(str,"%c",peptide[i]);
         q=font->getStringWidth(str);
-        font->render(posX+n+7-q/2,posY+i*12+20,str,1);
-        n+=14;
+        font->render(posX+n+8-q/2,posY+i*14+25,str,0);
+        n+=18;
 
-        r.x=posX+n; 
+        r.x=posX+n+1; 
+        SDL_SetRenderDrawColor(display->renderer,colorTable[1].r,colorTable[1].g,colorTable[1].b,255);
         SDL_RenderFillRect(display->renderer,&r);
         sprintf(str,"%d",ionCount-i+1);
         q=font->getStringWidth(str);
-        font->render(posX+n+7-q/2,posY+i*12+20,str,1);
-        n+=14;
+        font->render(posX+n+8-q/2,posY+i*14+25,str,1);
+        n+=18;
       }
     }
   }
@@ -521,6 +513,7 @@ void CFragmentLists::setDisplay(CDisplay* d){
   display=d;
   size_t i,j;
   for(i=0;i<3;i++) {
+    colorTable[i]=display->pal.ionTable[i];
     for(j=0;j<6;j++) colorIons[i][j]=display->pal.spectrumIons[i][j];
   }
 }

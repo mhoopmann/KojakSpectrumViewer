@@ -18,15 +18,15 @@ public:
 
   int posX;
   int posY;
-
+  int sz;
   string caption;
   
+  int  getCaptionWidth();
   bool logic(int mouseX, int mouseY, int mouseButton);
   void render();
   void setDisplay(CDisplay* d);
   void setFocus(CActiveFocus* f);
   void setFont(CFont* f);
-  void setSize(int s);
 
 private:
 
@@ -34,7 +34,7 @@ private:
   CDisplay* display;
   CFont* font;
 
-  int sz;
+  kvColor color;
   
 
 };

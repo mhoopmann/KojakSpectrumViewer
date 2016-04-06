@@ -107,6 +107,8 @@ int CResults::readPepXML(char* fn, CTable* t){
   for(i=0;i<p.size();i++){
     psm.clear();
     psm.scanNumber=p[i].scanNumber;
+    psm.mass=p[i].precursorNeutMass;
+    psm.charge=p[i].charge;
     psm.peptideA=p.getPeptide(i,false);
     psm.peptideB=p.getPeptide(i,false,1,true);
     for(k=0;k<p.getPeptideModCount(i);k++){

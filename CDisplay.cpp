@@ -101,6 +101,12 @@ void CDisplay::readPalette(){
     else if(object.compare("button.highlight_border")==0) pal.buttons[2]=extractColors(rgb);
     else if(object.compare("button.pressed")==0) pal.buttons[3]=extractColors(rgb);
     else if(object.compare("button.inactive")==0) pal.buttons[4]=extractColors(rgb);
+    else if(object.compare("checkbox.color")==0) pal.checkbox=extractColors(rgb);
+    else if(object.compare("ions.header")==0) pal.ionTable[0]=extractColors(rgb);
+    else if(object.compare("ions.subheader")==0) pal.ionTable[1]=extractColors(rgb);
+    else if(object.compare("ions.cell")==0) pal.ionTable[2]=extractColors(rgb);
+    else if(object.compare("toolbar.color")==0) pal.toolbar[0]=extractColors(rgb);
+    else if(object.compare("toolbar.separator")==0) pal.toolbar[1]=extractColors(rgb);
     else if(object.compare("spectrum.background")==0) pal.spectrum[0]=extractColors(rgb);
     else if(object.compare("spectrum.graph")==0) pal.spectrum[1]=extractColors(rgb);
     else if(object.compare("spectrum.graph_axis")==0) pal.spectrum[2]=extractColors(rgb);

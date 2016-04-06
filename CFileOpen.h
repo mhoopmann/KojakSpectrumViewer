@@ -4,6 +4,7 @@
 #include "CActiveFocus.h"
 #include "CButton.h"
 #include "CDisplay.h"
+#include "CGfxCollection.h"
 #include "CList.h"
 #include "CTextBox.h"
 #include "dirent.h"
@@ -38,6 +39,7 @@ public:
   void setDisplay  (CDisplay* d);
   void setFocus    (CActiveFocus* f);
   void setFont     (CFont* f);
+  void setGfx      (CGfxCollection* g);
 
 private:
 

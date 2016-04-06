@@ -57,7 +57,7 @@ void CTable::addDataPoint(size_t row, kvTableDP& dp){
     if(w>columns[dp.ID].width) columns[dp.ID].width=w;
     break;
   case 1:
-    sprintf(str,"%.4lf",dp.dVal);
+    sprintf(str,"%.4g",dp.dVal);
     w=font->getStringWidth(str)+4;
     if(w>columns[dp.ID].width) columns[dp.ID].width=w;
     break;
@@ -101,7 +101,7 @@ void CTable::fixLayout(){
   
   //Vertical Scrolling
   viewSize = szY-26;
-  contentSize = rows.size()*16; //size of entire text content
+  contentSize = (int)rows.size()*16; //size of entire text content
   if(viewSize>0 && contentSize>viewSize) {
     showScrollbarV=true;
     
@@ -117,7 +117,7 @@ void CTable::fixLayout(){
 
   //Horizontal Scrolling
   viewSize = szX-10;
-  contentSize = columns.size(); //size of maximum text line
+  contentSize = (int)columns.size(); //size of maximum text line
   for(size_t i=0;i<columns.size();i++) contentSize+=columns[i].width;
   if(viewSize>0 && contentSize>viewSize) {
     showScrollbarH=true;
@@ -242,7 +242,7 @@ bool CTable::render(){
   r=vp;
   r.x=0;
   r.y=0;
-  SDL_SetRenderDrawColor(display->renderer,240,240,240,255);
+  SDL_SetRenderDrawColor(display->renderer,235,235,235,255);
   SDL_RenderFillRect(display->renderer,&r);
 
   //Display active column headers
@@ -250,7 +250,7 @@ bool CTable::render(){
   r.x=0-(int)(scrollOffsetH*scrollJumpH);
   r.y=0;
   r.h=15;
-  SDL_SetRenderDrawColor(display->renderer,120,120,120,255);
+  SDL_SetRenderDrawColor(display->renderer,85,98,112,255);
   for(i=0;i<columns.size();i++){
 
     if(r.x>vp.w) break;
@@ -284,7 +284,7 @@ bool CTable::render(){
   for(j=0;j<rows.size();j++){
 
     r.x=0-(int)(scrollOffsetH*scrollJumpH);
-    r.y=j*16-(int)(scrollOffsetV*scrollJumpV);
+    r.y=(int)j*16-(int)(scrollOffsetV*scrollJumpV);
     if(r.y>vp.h) break;
     if(r.y+16<0) continue;
     
@@ -295,7 +295,7 @@ bool CTable::render(){
       r2=vp;
       r2.y=r.y;
       r2.h=15;
-      SDL_SetRenderDrawColor(display->renderer,235,255,235,255);
+      SDL_SetRenderDrawColor(display->renderer,120,215,208,205);
       SDL_RenderFillRect(display->renderer,&r2);
       SDL_SetRenderDrawColor(display->renderer,255,255,255,255);
     }     
@@ -329,7 +329,7 @@ bool CTable::render(){
         font->render(r.x+2,r.y+2,str,1);
         break;
       case 1:
-        sprintf(str,"%.4lf",rows[j][k].dVal);
+        sprintf(str,"%.4g",rows[j][k].dVal);
         font->render(r.x+2,r.y+2,str,1);
         break;
       default:
@@ -420,7 +420,7 @@ int CTable::compar(const void* p1, const void* p2){
   for(j=0;j<r2.dp->size();j++){
     if(r2.dp->at(j).ID==sortIndex) break;
   }
-  if(i==r2.dp->size()) return -1;
+  if(j==r2.dp->size()) return -1;
 
   switch(sortDataType){
   case 0:
