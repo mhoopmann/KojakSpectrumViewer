@@ -83,7 +83,7 @@ public:
   void  fixLayout();
 
   int getColumn(char* str);
-  int getColumn(string& str);
+  int getColumn(string str);
 
   int logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1);
   bool render();
@@ -91,7 +91,7 @@ public:
   void setFocus(CActiveFocus* f);
   void setFont(CFont* f);
   size_t size(bool col=false);
-  void sort(string& colID, bool highToLow=true);
+  void sort(string colID, bool highToLow=true);
 
 private:
 

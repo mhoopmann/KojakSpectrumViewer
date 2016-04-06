@@ -124,6 +124,8 @@ void CFileOpen::init(){
   listDir.szX=50;
   listDir.szY=450;
   listDir.setSize(14);
+
+#ifndef GCC //find a linux compatible method
   char drv[12];
   strcpy(drv,"A:");
   ULONG uDriveMask = _getdrives();
@@ -137,6 +139,7 @@ void CFileOpen::init(){
     i++;
     uDriveMask >>= 1;
   }
+#endif
 
   listFile.posX=190;
   listFile.posY=60;
@@ -160,7 +163,7 @@ int CFileOpen::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
     return 1;
   }
   if(butDirUp.logic(mouseX,mouseY,mouseButton)){
-    _chdir("..");
+    chdir("..");
     buildFileList(".");
     getcwd(cwd,1024);
     tbPath.clear();
@@ -177,7 +180,7 @@ int CFileOpen::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
     case 2:
       if(listFile.getSelected()<0) return 0;
       if(vFileList[listFile.getSelectedItem().value].type==0){
-        _chdir(&vFileList[listFile.getSelectedItem().value].name[0]);
+        chdir(&vFileList[listFile.getSelectedItem().value].name[0]);
         buildFileList(".");
         getcwd(cwd,1024);
         tbPath.clear();
@@ -194,6 +197,7 @@ int CFileOpen::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
     case 1:
       return 0;
     case 2:
+#ifndef GCC //find a linux compatible version
       if(listDir.getSelected()<0) return 0;
       if(_chdrive(listDir.getSelectedItem().value)==0) {
         buildFileList(".");
@@ -205,6 +209,7 @@ int CFileOpen::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
         tbPath.clear();
       }
       butLoad.active=false;
+#endif
       return 0;
     default:
       break;

@@ -7,11 +7,15 @@
 #include "CGfxCollection.h"
 #include "CList.h"
 #include "CTextBox.h"
-#include "dirent.h"
 
 #ifdef _MSC_VER
+#include "dirent.h"
 #include <direct.h>
 #define getcwd(a,b) _getcwd(a,b)
+#define chdir(a) _chdir(a)
+#else
+#include <dirent.h>
+#include <unistd.h>
 #endif
 
 using namespace std;

@@ -8,12 +8,13 @@ int main( int argc, char* args[] ) {
   SDL_Event e;
   CActiveFocus appActiveFocus;
 
-	//Start up SDL and create window
+  //Start up SDL and create window
   CDisplay display;
-	if(!display.init())	{
-		printf( "Failed to initialize!\n" );
+  if(!display.init())	{
+    printf( "Failed to initialize!\n" );
     return -1;
-	}	
+  }	
+
 
   CInput inp;
   CViewer viewer(&display,&inp);
@@ -41,5 +42,6 @@ int main( int argc, char* args[] ) {
     SDL_RenderPresent(display.renderer);
   }
 
-	return 0;
+
+  return 0;
 }

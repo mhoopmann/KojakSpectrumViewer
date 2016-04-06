@@ -29,42 +29,42 @@ bool CDisplay::getWindowSize(int& w, int& h){
 }
 
 bool CDisplay::init() {
-	//Initialization flag
-	bool success = true;
+  //Initialization flag
+  bool success = true;
 
-	//Initialize SDL
-	if( SDL_Init( SDL_INIT_VIDEO ) < 0 ){
-		printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
-		success = false;
-	}	else	{
+  //Initialize SDL
+  if( SDL_Init( SDL_INIT_VIDEO ) < 0 ){
+    printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
+    success = false;
+  } else {
     //Set texture filtering to linear
-		if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) ) {
-			printf( "Warning: Linear texture filtering not enabled!" );
-		}
+    if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) ) {
+      printf( "Warning: Linear texture filtering not enabled!" );
+    }
 
-		//Create window
-		window = SDL_CreateWindow( "Kojak Spectrum Viewer", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
-		if( window == NULL )	{
-			printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
-			success = false;
-		}	else	{
-			//Get window surface
-			//screenSurface = SDL_GetWindowSurface(window);
+    //Create window
+    window = SDL_CreateWindow( "Kojak Spectrum Viewer", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
+    if( window == NULL ) {
+      printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
+      success = false;
+    } else {
+      //Get window surface
+      //screenSurface = SDL_GetWindowSurface(window);
 
       renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
-			if( renderer == NULL ) {
-				printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
-				success = false;
-			} else {
-				//Initialize renderer color
-				SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+      if( renderer == NULL ) {
+        printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+        success = false;
+      } else {
+        //Initialize renderer color
+        SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
         SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
-			}
+      }
 
-		}
-	}
+    }
+  }
 
-	return success;
+  return success;
 }
 
 kvColor CDisplay::extractColors(string& s){

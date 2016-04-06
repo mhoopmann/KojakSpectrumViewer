@@ -6,6 +6,9 @@
 #include "CPepXMLSpectrum.h"
 #include <iostream>
 #include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <string.h>
 
 #define XMLCLASS		
 #ifndef XML_STATIC

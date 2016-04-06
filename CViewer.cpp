@@ -52,10 +52,18 @@ void CViewer::init(){
   sg.szX=500;
   sg.szY=300;  
 
+#ifdef GCC
+  gfx.loadGfx("./Fonts/icons.bmp",display->renderer);
+#else
   gfx.loadGfx("Fonts\\icons.bmp",display->renderer);
+#endif
 
   font.setRenderer(display->renderer);
+#ifdef GCC
+  font.loadFont("./Fonts/Carlito-Regular.ttf");
+#else
   font.loadFont("Fonts\\Carlito-Regular.ttf");
+#endif
 
   msgBox.setDisplay(display);
   msgBox.setFont(&font);

@@ -1,7 +1,12 @@
 #ifndef _CDISPLAY_H
 #define _CDISPLAY_H
 
+#ifdef GCC
+#include <SDL2/SDL.h>
+#else
 #include <SDL.h>
+#endif
+
 //#include <stdio.h>
 #include <string>
 #include "Structs.h"

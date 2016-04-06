@@ -2,7 +2,12 @@
 #define _CFONT_H
 
 #include <string>
+
+#ifdef GCC
+#include <SDL2/SDL_ttf.h>
+#else
 #include <SDL_ttf.h>
+#endif
 
 using namespace std;
 

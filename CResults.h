@@ -7,6 +7,7 @@
 #include "Structs.h"
 
 using namespace MSToolkit;
+using namespace std;
 
 class CResults {
 public:

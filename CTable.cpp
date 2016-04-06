@@ -138,7 +138,7 @@ int CTable::getColumn(char* str){
   return getColumn(s);
 }
 
-int CTable::getColumn(string& str){
+int CTable::getColumn(string str){
   size_t i;
   for(i=0;i<columns.size();i++){
     if(columns[i].header.compare(str)==0) break;
@@ -391,7 +391,7 @@ size_t CTable::size(bool col){
   else return rows.size();
 }
 
-void CTable::sort(string& colID, bool highToLow){
+void CTable::sort(string colID, bool highToLow){
 
   size_t i;
   for(i=0;i<columns.size();i++){

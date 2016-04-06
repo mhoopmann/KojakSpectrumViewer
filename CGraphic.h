@@ -1,7 +1,12 @@
 #ifndef _CGRAPHIC_H
 #define _CGRAPHIC_H
 
+#ifdef GCC
+#include <SDL2/SDL.h>
+#else
 #include <SDL.h>
+#endif
+
 #include <stdio.h>
 #include <string>
 
