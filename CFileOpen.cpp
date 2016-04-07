@@ -33,7 +33,7 @@ void CFileOpen::buildFileList(char* path){
       if(f.name.rfind(".")!=string::npos){
         f.ext=f.name.substr(f.name.rfind(".",string::npos));
         if(f.ext.compare(".xml")==0){
-          printf("%s: %d\n",&f.name[0],f.name.rfind(".pep.xml"));
+          //printf("%s: %d\n",&f.name[0],f.name.rfind(".pep.xml"));
           if(f.name.rfind(".pep.xml")==f.name.size()-8){
             f.ext="pep.xml";
           }
