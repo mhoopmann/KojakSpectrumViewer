@@ -32,15 +32,9 @@ private:
   SDL_Renderer* rend;
   TTF_Font*     font;
 
-  SDL_Texture* texture_8[2][128];
-  SDL_Texture* texture_10[2][128];
-  SDL_Texture* texture_12[2][128];
-  SDL_Texture* texture_16[2][128];
+  SDL_Texture* texture[21][2][128];
 
-  SDL_Rect rect_8[128];
-  SDL_Rect rect_10[128];
-  SDL_Rect rect_12[128];
-  SDL_Rect rect_16[128];
+  SDL_Rect rect[21][128];
   
   int height;
   int width;

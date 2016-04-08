@@ -17,14 +17,19 @@ public:
   int   posX;
   int   posY;
   int   szX;
-  int   szY;
 
+  bool  active;
+  bool  decimal;
+  bool  numeric;
+
+  void clear        ();
   bool logic        (int mouseX, int mouseY, int mouseButton);
   int  processInput ();
   void render       ();
   void setDisplay   (CDisplay* d);
   void setFocus     (CActiveFocus* f);
   void setFont      (CFont* f);
+  void setFontSize  (int sz);
   void setInput     (CInput* i);
 
 private:
@@ -37,8 +42,9 @@ private:
 
   string  content;
   int     cursor;
+  int   fontSize;
   bool    lockButton;
-  bool    lockKey[13];
+  int     szY;
   Uint32  timer;
 
 };

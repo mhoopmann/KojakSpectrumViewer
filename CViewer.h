@@ -1,6 +1,7 @@
 #ifndef _CVIEWER_H
 #define _CVIEWER_H
 
+#include "CAbout.h"
 #include "CActiveFocus.h"
 #include "CButton.h"
 #include "CDisplay.h"
@@ -38,6 +39,7 @@ private:
   CDisplay* display;
   CInput* input;
 
+  CAbout aboutDlg;
   CFileOpen fileDlg;
   CFont font;
   CGfxCollection gfx;

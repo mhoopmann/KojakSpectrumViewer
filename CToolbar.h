@@ -47,6 +47,7 @@ private:
   CButton   prevButton;
   CButton   nextButton;
   CButton   sfButton;
+  CButton   aboutButton;
   //CEditBox  jumpBox;
 
   vector<SDL_Rect> separators;

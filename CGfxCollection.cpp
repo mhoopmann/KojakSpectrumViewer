@@ -12,7 +12,7 @@ bool CGfxCollection::loadGfx(char* fn, SDL_Renderer *rend){
   if(icons!=NULL) delete icons;
   icons = new CGraphic;
   icons->loadTexture(fn,rend,false,true,255,0,255);
-  icons->createImages(24,24,120,24);
+  icons->createImages(24,24,144,24);
 
   return true;
 }

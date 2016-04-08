@@ -186,8 +186,9 @@ int CFileOpen::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
         tbPath.clear();
         tbPath.addText(cwd);
         butLoad.active=false;
+      } else {
+        butLoad.active=true;
       }
-      butLoad.active=true;
       return 0;
     default:
       break;
@@ -229,7 +230,7 @@ void CFileOpen::render(){
 
   //Draw the sidebar
   r.w=120;
-  SDL_SetRenderDrawColor(display->renderer,128,128,128,255);
+  SDL_SetRenderDrawColor(display->renderer,85,98,112,255);
   SDL_RenderFillRect(display->renderer,&r);
 
   //Draw the buttons

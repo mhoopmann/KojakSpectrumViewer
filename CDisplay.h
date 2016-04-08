@@ -31,6 +31,8 @@ private:
   int           screenHeight;
   int           screenWidth;
 
+  void    defaultColors();
+  kvColor extractColors(const char* s);
   kvColor extractColors(string& s);
   void    readPalette();
 

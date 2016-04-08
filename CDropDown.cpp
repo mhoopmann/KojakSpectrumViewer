@@ -12,7 +12,7 @@ CDropDown::CDropDown(){
   szY = 0;
   szDrop = 0;
   fontSize = 12;
-  selected = 0;
+  selected = -1;
   highlight=-1;
 
   showScrollbarV=false;
@@ -39,7 +39,7 @@ void CDropDown::addItem(string& str){
 void CDropDown::clear(){
   items.clear();
   dropped=false;
-  selected=0;
+  selected=-1;
   highlight=-1;
 }
 
@@ -51,7 +51,7 @@ void CDropDown::fixLayout(){
   
   //Vertical Scrolling
   viewSize = szDrop-2;
-  contentSize = (int)items.size()*15; //size of entire text content
+  contentSize = (int)items.size()*(fontSize+3); //size of entire text content
   if(viewSize>0 && contentSize>viewSize) {
     showScrollbarV=true;
     
@@ -68,10 +68,17 @@ void CDropDown::fixLayout(){
 }
 
 string CDropDown::getSelected(){
+  if(selected<0) {
+    string s;
+    s.clear();
+    return s;
+  }
   return items[selected];
 }
 
 int CDropDown::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
+
+  if(!active) return 0;
 
   if(mouseButton1 && dropped && showScrollbarV){
     //printf("%d %d :: %d %d\n",mouseX,mouseY,szX-8,posY+szY+scrollOffsetV+1);
@@ -102,8 +109,8 @@ int CDropDown::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
   }
 
   if(mouseButton==1 && dropped && mouseX>=posX && mouseX<=(posX+szX-10) && mouseY>=posY+szY+1 && mouseY<=posY+szY+szDrop-1){
-    int i=mouseY-posY-15+(int)(scrollOffsetV*scrollJumpV);
-    i/=15;
+    int i=mouseY-posY-szY+(int)(scrollOffsetV*scrollJumpV);
+    i/=(fontSize+3);
     if(i<(int)items.size()) selected = i;
     dropped=false;
     return 2;
@@ -115,8 +122,8 @@ int CDropDown::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
   }
 
   if(dropped && mouseX>=posX && mouseX<=(posX+szX-10) && mouseY>=posY+szY+1 && mouseY<=posY+szY+szDrop-1){
-    int i=mouseY-posY-15+(int)(scrollOffsetV*scrollJumpV);
-    i/=15;
+    int i=mouseY-posY-szY+(int)(scrollOffsetV*scrollJumpV);
+    i/=(fontSize+3);
     if(i<(int)items.size()) highlight = i;
   } else {
     highlight=-1;
@@ -156,14 +163,14 @@ void CDropDown::render(){
   button.render();
 
   //Draw text
-  font->render(posX+4,posY+2,items[selected],1);
+  if(selected>-1) font->render(posX+4,posY+2,items[selected],1);
   
   //Draw list
   if(dropped){
     vp.h=szDrop;
     vp.w=szX;
-    vp.x=posX;
-    vp.y=posY+szY;
+    vp.x=posX+origVP.x;
+    vp.y=posY+szY+origVP.y;
     SDL_RenderSetViewport(display->renderer,&vp);
 
     r.x=0;
@@ -180,17 +187,20 @@ void CDropDown::render(){
     r.x=4;
     r.y=1-(int)(scrollOffsetV*scrollJumpV);
     for(size_t i=0;i<items.size();i++){
-      if(r.y+15<0) continue;
+      if(r.y+(fontSize+3)<0) {
+        r.y+=(fontSize+3);
+        continue;
+      }
       if(highlight==(int)i){
         r2.x=1;
         r2.y=r.y;
         r2.w=szX-2;
-        r2.h=15;
+        r2.h=fontSize+3;
         SDL_SetRenderDrawColor(display->renderer,colors[1].r,colors[1].g,colors[1].b,255);
         SDL_RenderFillRect(display->renderer,&r2);
       }
-      font->render(r.x,r.y,items[i],1);
-      r.y+=15;
+      font->render(r.x,r.y+1,items[i],1);
+      r.y+=(fontSize+3);
     }
 
     //Draw scrollbar
@@ -235,3 +245,15 @@ void CDropDown::setFont(CFont* f){
   button.setFont(f);
   button.setCaption("v");
 }
+
+void CDropDown::setFontSize(int sz){
+  if(sz<6)   sz=6;
+  if(sz>20)  sz=20;
+  fontSize = sz;
+  szY = sz+7;
+}
+
+size_t CDropDown::size(){
+  return items.size();
+}
+

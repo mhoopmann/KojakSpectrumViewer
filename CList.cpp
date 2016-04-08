@@ -61,7 +61,7 @@ void CList::fixLayout(){
   
   //Vertical Scrolling
   viewSize = szY;
-  contentSize = items->size()*szHeight; //size of entire text content
+  contentSize = (int)items->size()*szHeight; //size of entire text content
   if(viewSize>0 && contentSize>viewSize) {
     showScrollbarV=true;
     
@@ -169,7 +169,7 @@ void CList::render(){
   r.w=szX;
   r.x=0;
   for(i=offset;i<items->size();i++){
-    r.y=i*szHeight-(int)(scrollOffsetV*scrollJumpV);
+    r.y=(int)i*szHeight-(int)(scrollOffsetV*scrollJumpV);
     if(i==selected){
       SDL_SetRenderDrawColor(display->renderer,32,128,128,255);
       SDL_RenderFillRect(display->renderer,&r);

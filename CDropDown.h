@@ -17,11 +17,9 @@ public:
 
   bool active;
 
-  int fontSize;
   int posX;
   int posY;
   int szX;
-  int szY;
   int szDrop;
 
   int selected;
@@ -37,7 +35,8 @@ public:
   void    setDisplay  (CDisplay* d);
   void    setFocus    (CActiveFocus* f);
   void    setFont     (CFont* f);
-  void    setSize     (int s);
+  void    setFontSize (int sz);
+  size_t  size        ();
 
 private:
 
@@ -51,11 +50,13 @@ private:
 
   bool dropped;
 
+  int     fontSize;
   int     lastMouseY;
   double  scrollJumpV;
   bool    scrollLockV;
   int     scrollOffsetV;
   bool    showScrollbarV;
+  int     szY;
   int     thumbHeightV;
   int     thumbMaxV;
 

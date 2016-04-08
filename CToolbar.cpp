@@ -41,6 +41,13 @@ CToolbar::CToolbar(){
   sfButton.szX=28;
   sfButton.szY=28;
 
+  addSeparator(138, 2);
+
+  aboutButton.posX=142;
+  aboutButton.posY=2;
+  aboutButton.szX=28;
+  aboutButton.szY=28;
+
   lockButton=false;
 
 }
@@ -66,13 +73,14 @@ void CToolbar::init(){
   prevButton.setImage(2);
   nextButton.setImage(1);
   sfButton.setImage(3);
+  aboutButton.setImage(5);
 }
 
 int CToolbar::logic(int mouseX, int mouseY, int mouseButton){
   if(openButton.logic(mouseX,mouseY,mouseButton)) return 1;
   if(prevButton.logic(mouseX,mouseY,mouseButton)) return 2;
   if(nextButton.logic(mouseX,mouseY,mouseButton)) return 3;
-  //if(jumpBox.logic(mouseX,mouseY,mouseButton)) return 4;
+  if(aboutButton.logic(mouseX,mouseY,mouseButton)) return 4;
   if(sfButton.logic(mouseX,mouseY,mouseButton)) return 5;
   
   int x,y;
@@ -125,6 +133,7 @@ void CToolbar::render(){
   nextButton.render();
   //jumpBox.render();
   sfButton.render();
+  aboutButton.render();
 
 }
 
@@ -137,6 +146,7 @@ void CToolbar::setDisplay(CDisplay* d){
   nextButton.setDisplay(d);
   //jumpBox.setDisplay(d);
   sfButton.setDisplay(d);
+  aboutButton.setDisplay(d);
 }
 
 void CToolbar::setFocus(CActiveFocus* f){
@@ -146,6 +156,7 @@ void CToolbar::setFocus(CActiveFocus* f){
   nextButton.setFocus(f);
   //jumpBox.setFocus(f);
   sfButton.setFocus(f);
+  aboutButton.setFocus(f);
 }
 
 void CToolbar::setFont(CFont* f){
@@ -155,6 +166,7 @@ void CToolbar::setFont(CFont* f){
   nextButton.setFont(f);
   //jumpBox.setFont(f);
   sfButton.setFont(f);
+  aboutButton.setFont(f);
 }
 
 void CToolbar::setGfx(CGfxCollection* g){
@@ -162,6 +174,7 @@ void CToolbar::setGfx(CGfxCollection* g){
   prevButton.setGfx(g);
   nextButton.setGfx(g);
   sfButton.setGfx(g);
+  aboutButton.setGfx(g);
 }
 
 void CToolbar::setInput(CInput* i){

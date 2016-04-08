@@ -12,7 +12,9 @@ CEditBox::CEditBox(){
   posY = 0;
   szX  = 0;
   szY  = 0;
-  for(int i=0;i<10;i++) lockKey[i]=false;
+  numeric = false;
+  decimal = false;
+  active = true;
 
   content.clear();
   timer = SDL_GetTicks();
@@ -25,17 +27,35 @@ CEditBox::~CEditBox(){
   input   = NULL;
 }
 
+void CEditBox::clear(){
+  content.clear();
+  cursor=0;
+}
+
 bool CEditBox::logic(int mouseX, int mouseY, int mouseButton){
- if(mouseX>=posX && mouseX<=(posX+szX) && mouseY>=posY && mouseY<=(posY+szY)) {
+  if(!active) return false;
+
+  if(mouseX>=posX && mouseX<=(posX+szX) && mouseY>=posY && mouseY<=(posY+szY)) {
     //highlight=true;
     if(mouseButton==1 && !lockButton){
+      input->clear();  //clear anything still in buffer
       activeFocus->focus=this;
       lockButton=true;
 
+      int fs=font->fontSize;
       int x=mouseX-posX-4;
-      cursor=x/9;
-      if(cursor<0) cursor=0;
-      if(cursor>(int)content.size()) cursor=(int)content.size();
+      cursor=0;
+      font->fontSize=fontSize;
+      if(content.size()>0) {
+        cursor=0;
+        while(font->getStringWidth(content.substr(0, cursor))<x) {
+          cursor++;
+          if(cursor>(int)content.size()) break;
+        }
+        cursor--;
+        if(cursor<0) cursor=0;
+      }
+      font->fontSize=fs;
 
       return true;
     }
@@ -48,90 +68,52 @@ bool CEditBox::logic(int mouseX, int mouseY, int mouseButton){
 }
 
 int CEditBox::processInput(){
-  if(!lockKey[0] && input->isPressed(KEY_0)) {
-    content.insert(cursor,"0");
-    cursor++;
-    lockKey[0]=true;
-  }
-  if(!lockKey[1] && input->isPressed(KEY_1)) {
-    content.insert(cursor,"1");
-    cursor++;
-    lockKey[1]=true;
-  }
-  if(!lockKey[2] && input->isPressed(KEY_2)) {
-    content.insert(cursor,"2");
-    cursor++;
-    lockKey[2]=true;
-  }
-  if(!lockKey[3] && input->isPressed(KEY_3)) {
-    content.insert(cursor,"3");
-    cursor++;
-    lockKey[3]=true;
-  }
-  if(!lockKey[4] && input->isPressed(KEY_4)) {
-    content.insert(cursor,"4");
-    cursor++;
-    lockKey[4]=true;
-  }
-  if(!lockKey[5] && input->isPressed(KEY_5)) {
-    content.insert(cursor,"5");
-    cursor++;
-    lockKey[5]=true;
-  }
-  if(!lockKey[6] && input->isPressed(KEY_6)) {
-    content.insert(cursor,"6");
-    cursor++;
-    lockKey[6]=true;
-  }
-  if(!lockKey[7] && input->isPressed(KEY_7)) {
-    content.insert(cursor,"7");
-    cursor++;
-    lockKey[7]=true;
-  }
-  if(!lockKey[8] && input->isPressed(KEY_8)) {
-    content.insert(cursor,"8");
-    cursor++;
-    lockKey[8]=true;
-  }
-  if(!lockKey[9] && input->isPressed(KEY_9)) {
-    content.insert(cursor,"9");
-    cursor++;
-    lockKey[9]=true;
-  }
-  if(!lockKey[10] && input->isPressed(KEY_BACKSPACE)){
-    if(cursor>0){
-      content.erase(cursor-1,1);
-      cursor--;
+  char c;
+  while (input->size() > 0){
+    c = input->getBuffer();
+    if (!numeric && c > 31 && c < 127) {
+      content.insert(content.begin()+cursor, c);
+      cursor++;
+    } else if(numeric && c>47 && c<58) {
+      content.insert(content.begin()+cursor, c);
+      cursor++;
+    } else if(numeric && c==46 && !decimal){
+      decimal=true;
+      content.insert(content.begin()+cursor, c);
+      cursor++;
+    } else if (c == 127) {
+      if (cursor<(int)content.size()) {
+        if(numeric && decimal && content[cursor]=='.') decimal=false;
+        content.erase(cursor, 1);
+      }
+    } else if (c == 8) {
+      if (cursor>0){
+        if(numeric && decimal && content[cursor-1]=='.') decimal=false;
+        content.erase(cursor - 1, 1);
+        cursor--;
+      }
+    } else if (c == 13 && numeric){
+      int i;
+      i = atoi(&content[0]);
+      return i; //only exporting integers at the moment
     }
-    lockKey[10]=true;
   }
-  if(!lockKey[11] && input->isPressed(KEY_DELETE)){
-    if(cursor<(int)content.size()) content.erase(cursor,1);
-    lockKey[11]=true;
+
+  while(input->size(false)>0){
+    c = input->getBuffer(false);
+    if(c==1){
+      if(cursor>0) cursor--;
+    } else if(c==2){
+      if(cursor<(int)content.size()) cursor++;
+    }
   }
-  if(!lockKey[12] && input->isPressed(KEY_ENTER)){
-    int i;
-    i=atoi(&content[0]);
-    return i;
-  }
-  if(lockKey[0] && input->isReleased(KEY_0)) lockKey[0]=false;
-  if(lockKey[1] && input->isReleased(KEY_1)) lockKey[1]=false;
-  if(lockKey[2] && input->isReleased(KEY_2)) lockKey[2]=false;
-  if(lockKey[3] && input->isReleased(KEY_3)) lockKey[3]=false;
-  if(lockKey[4] && input->isReleased(KEY_4)) lockKey[4]=false;
-  if(lockKey[5] && input->isReleased(KEY_5)) lockKey[5]=false;
-  if(lockKey[6] && input->isReleased(KEY_6)) lockKey[6]=false;
-  if(lockKey[7] && input->isReleased(KEY_7)) lockKey[7]=false;
-  if(lockKey[8] && input->isReleased(KEY_8)) lockKey[8]=false;
-  if(lockKey[9] && input->isReleased(KEY_9)) lockKey[9]=false;
-  if(lockKey[10] && input->isReleased(KEY_BACKSPACE)) lockKey[10]=false;
-  if(lockKey[11] && input->isReleased(KEY_DELETE)) lockKey[11]=false;
-  if(lockKey[12] && input->isReleased(KEY_ENTER)) lockKey[12]=false;
+
   return -1;
 }
   
 void CEditBox::render(){
   SDL_Rect r;
+  int fs = font->fontSize;
 
   //Draw background
   r.w=szX;
@@ -143,20 +125,23 @@ void CEditBox::render(){
   SDL_RenderFillRect(display->renderer,&r);
 
   //Draw Text
-  font->render(posX+4,posY+4,content);
+  font->fontSize = fontSize;
+  font->render(posX+4,posY+3,content);
 
   //Draw Cursor
   if(this==activeFocus->focus){
     if(SDL_GetTicks()-timer>500){
       SDL_SetRenderDrawColor(display->renderer,255,255,255,255);
-      r.x=cursor*9+posX+4;
-      r.y=posY+4;
-      SDL_RenderDrawLine(display->renderer,r.x,r.y,r.x,r.y+20);
+      r.x=font->getStringWidth(content.substr(0,cursor))+posX+4;
+      r.y=posY+2;
+      SDL_RenderDrawLine(display->renderer,r.x,r.y,r.x,r.y+szY-5);
     }
     if(SDL_GetTicks()-timer>1000){
       timer=SDL_GetTicks();
     }
   }
+
+  font->fontSize=fs;
 
 }
 
@@ -170,6 +155,13 @@ void CEditBox::setFocus(CActiveFocus* f){
 
 void CEditBox::setFont(CFont* f){
   font=f;
+}
+
+void CEditBox::setFontSize(int sz){
+  if(sz<6)   sz=6;
+  if(sz>20)  sz=20;
+  fontSize = sz;
+  szY = sz+7;
 }
 
 void CEditBox::setInput(CInput* i){

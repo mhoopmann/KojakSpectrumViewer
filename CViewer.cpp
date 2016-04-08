@@ -94,6 +94,10 @@ void CViewer::init(){
   fileDlg.setFont(&font);
   fileDlg.setGfx(&gfx);
   fileDlg.init();
+
+  aboutDlg.setDisplay(display);
+  aboutDlg.setFont(&font);
+  aboutDlg.init();
   
   //data.readPepXML("C:\\Users\\mhoopman\\Documents\\Software Development\\KojakSpectrumViewer\\KojakSpectrumViewer\\Release\\112015-Standard-A-01.pep.xml");
   //data.readPepXML("C:\\Users\\mhoopman\\Documents\\Software Development\\KojakSpectrumViewer\\KojakSpectrumViewer\\Release\\Q_2013_1023_RJ_11_zelter16.pep.xml");
@@ -106,6 +110,7 @@ void CViewer::init(){
 
   sortDlg.setDisplay(display);
   sortDlg.setFont(&font);
+  sortDlg.setInput(input);
   sortDlg.init(&dt);
 
   tb.setDisplay(display);
@@ -187,6 +192,17 @@ bool CViewer::logic(){
     }
   }
 
+  if(state==3){
+    val=aboutDlg.logic(mouseX, mouseY, mouseButton, mouseButton1);
+    switch(val){
+    case 1:
+      state=0;
+      return true;
+    default:
+      return true;
+    }
+  }
+
   //only process other components if sliders are not locked
   if(!sliderV.checkLocked() && !sliderH.checkLocked()){
 
@@ -219,6 +235,7 @@ bool CViewer::logic(){
         resetSpectrum();
         return true;
       case 4: //jump box
+        state=3;
         return true;
       case 5: //sort/filter
         state=2;
@@ -313,6 +330,11 @@ bool CViewer::render(){
     return true;
   }
 
+  if(state==3){
+    aboutDlg.render();
+    return true;
+  }
+
   //Clear the entire window
   SDL_RenderGetViewport(display->renderer,&r);
   SDL_SetRenderDrawColor(display->renderer,0,0,0,255);
@@ -357,6 +379,7 @@ void CViewer::setDisplay(CDisplay *d){
   pepBox.setDisplay(d);
   fileDlg.setDisplay(d);
   sortDlg.setDisplay(d);
+  aboutDlg.setDisplay(d);
 }
 
 void CViewer::setFocus(CActiveFocus* f){
@@ -367,11 +390,13 @@ void CViewer::setFocus(CActiveFocus* f){
   fileDlg.setFocus(f);
   dt.setFocus(f);
   sortDlg.setFocus(f);
+  aboutDlg.setFocus(f);
 }
 
 void CViewer::setInput(CInput* inp){
   input=inp;
   sg.setInput(inp);
+  sortDlg.setInput(inp);
 }
 
 bool CViewer::viewerMain(){

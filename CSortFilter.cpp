@@ -4,6 +4,7 @@ CSortFilter::CSortFilter(){
   activeFocus = NULL;
   display = NULL;
   font = NULL;
+  input = NULL;
   dt = NULL;
 }
 
@@ -11,6 +12,7 @@ CSortFilter::~CSortFilter(){
   activeFocus = NULL;
   display = NULL;
   font = NULL;
+  input = NULL;
   dt = NULL;
 }
 
@@ -43,9 +45,8 @@ void CSortFilter::init(CTable* t){
   ddSort.posX=150;
   ddSort.posY=20;
   ddSort.szX=150;
-  ddSort.szY=18;
   ddSort.szDrop=200;
-  ddSort.fontSize=12;
+  ddSort.setFontSize(14);
   ddSort.addItem("none");
 
   size_t i;
@@ -53,12 +54,16 @@ void CSortFilter::init(CTable* t){
     ddSort.addItem(dt->col(i).header);
   }
 
+  fm.posX = 150;
+  fm.posY = 100;
+  fm.init(t);
+
 }
 
 int CSortFilter::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
   if(butApply.logic(mouseX,mouseY,mouseButton)) {
     dt->sort(ddSort.getSelected(),!cbSortAsc.checked);
-    return 0;
+    return 1;
   }
   if(butBack.logic(mouseX,mouseY,mouseButton)) {
     return 1;
@@ -69,6 +74,20 @@ int CSortFilter::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton
   if(cbSortAsc.logic(mouseX,mouseY,mouseButton)){
     return 0;
   }
+
+
+  switch(fm.logic(mouseX, mouseY, mouseButton, mouseButton1)){
+  case 4:
+    return 0;
+  default:
+    break;
+  }
+
+  switch(fm.processInput()){
+  default:
+    break;
+  }
+
   return 0;
 }
 
@@ -83,16 +102,21 @@ void CSortFilter::render(){
 
   //Draw the sidebar
   r.w=120;
-  SDL_SetRenderDrawColor(display->renderer,128,128,128,255);
+  SDL_SetRenderDrawColor(display->renderer,85,98,112,255);
   SDL_RenderFillRect(display->renderer,&r);
 
   //Draw the buttons
   butApply.render();
   butBack.render();
 
+  //Draw the filter components
+  fm.render();
+  
   //Draw the sort components
   ddSort.render();
   cbSortAsc.render();
+
+  
 
 }
 
@@ -102,6 +126,7 @@ void CSortFilter::setDisplay(CDisplay* d){
   butBack.setDisplay(d);
   cbSortAsc.setDisplay(d);
   ddSort.setDisplay(d);
+  fm.setDisplay(d);
 }
 
 void CSortFilter::setFocus(CActiveFocus* f){
@@ -110,6 +135,7 @@ void CSortFilter::setFocus(CActiveFocus* f){
   butBack.setFocus(f);
   cbSortAsc.setFocus(f);
   ddSort.setFocus(f);
+  fm.setFocus(f);
 }
 
 void CSortFilter::setFont(CFont* f){
@@ -118,4 +144,11 @@ void CSortFilter::setFont(CFont* f){
   butBack.setFont(f);
   cbSortAsc.setFont(f);
   ddSort.setFont(f);
+  fm.setFont(f);
 }
+
+void CSortFilter::setInput(CInput* i){
+  input = i;
+  fm.setInput(i);
+}
+

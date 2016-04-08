@@ -6,7 +6,9 @@
 #include "CCheckbox.h"
 #include "CDisplay.h"
 #include "CDropDown.h"
+#include "CFilterManager.h"
 #include "CFont.h"
+#include "CInput.h"
 #include "CTable.h"
 
 using namespace std;
@@ -25,12 +27,14 @@ public:
   void setDisplay (CDisplay* d);
   void setFocus   (CActiveFocus* f);
   void setFont    (CFont* f);
+  void setInput   (CInput* i);
 
 private:
 
   CActiveFocus* activeFocus;
   CDisplay*     display;
   CFont*        font;
+  CInput*       input;
   CTable*       dt;
 
   CButton butApply;
@@ -40,6 +44,8 @@ private:
   CCheckbox cbSortAsc;
 
   CDropDown ddSort;
+
+  CFilterManager fm;
 
 };
 

@@ -7,6 +7,7 @@ CDisplay::CDisplay(){
   //screenSurface = NULL;
   window = NULL;
 
+  defaultColors();
   readPalette();
 
 }
@@ -19,6 +20,41 @@ CDisplay::~CDisplay(){
   if(window != NULL) SDL_DestroyWindow(window);
   window = NULL;
   SDL_Quit();
+}
+
+void CDisplay::defaultColors(){
+  pal.buttons[0]=extractColors("85,98,112");
+  pal.buttons[1]=extractColors("255,156,0");
+  pal.buttons[2]=extractColors("217,133,0");
+  pal.buttons[3]=extractColors("25,133,125");
+  pal.buttons[4]=extractColors("85,98,112");
+  pal.checkbox=extractColors("85,98,112");
+  pal.ionTable[0]=extractColors("85,98,112");
+  pal.ionTable[1]=extractColors("212,215,219");
+  pal.ionTable[2]=extractColors("238,238,240");
+  pal.toolbar[0]=extractColors("85,98,112");
+  pal.toolbar[1]=extractColors("68,74,80");
+  pal.spectrum[0]=extractColors("255,255,255");
+  pal.spectrum[1]=extractColors("180,180,180");
+  pal.spectrum[2]=extractColors("32,32,32");
+  pal.spectrumIons[0][0]=extractColors("125,196,226");
+  pal.spectrumIons[1][0]=extractColors("125,196,226");
+  pal.spectrumIons[2][0]=extractColors("125,196,226");
+  pal.spectrumIons[0][1]=extractColors("85,170,207");
+  pal.spectrumIons[1][1]=extractColors("85,170,207");
+  pal.spectrumIons[2][1]=extractColors("85,170,207");
+  pal.spectrumIons[0][2]=extractColors("53,146,186");
+  pal.spectrumIons[1][2]=extractColors("53,146,186");
+  pal.spectrumIons[2][2]=extractColors("53,146,186");
+  pal.spectrumIons[0][3]=extractColors("255,144,144");
+  pal.spectrumIons[1][3]=extractColors("255,144,144");
+  pal.spectrumIons[2][3]=extractColors("255,144,144");
+  pal.spectrumIons[0][4]=extractColors("255,107,107");
+  pal.spectrumIons[1][4]=extractColors("255,107,107");
+  pal.spectrumIons[2][4]=extractColors("255,107,107");
+  pal.spectrumIons[0][5]=extractColors("166,35,35");
+  pal.spectrumIons[1][5]=extractColors("166,35,35");
+  pal.spectrumIons[2][5]=extractColors("166,35,35");
 }
 
 bool CDisplay::getWindowSize(int& w, int& h){
@@ -65,6 +101,11 @@ bool CDisplay::init() {
   }
 
   return success;
+}
+
+kvColor CDisplay::extractColors(const char* s){
+  string str=s;
+  return extractColors(str);
 }
 
 kvColor CDisplay::extractColors(string& s){

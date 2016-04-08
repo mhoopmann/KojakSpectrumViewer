@@ -4,39 +4,36 @@ CFont::CFont(){
   fontSize=16;
   font=NULL;
   rend = NULL;
-  for(int j=0;j<2;j++){
-    for(int i=0;i<128;i++){
-      texture_8[j][i]=NULL;
-      texture_10[j][i]=NULL;
-      texture_12[j][i]=NULL;
-      texture_16[j][i]=NULL;
+
+  int i, j, k;
+
+  for(i=0; i<21; i++){
+    for(j=0; j<2; j++){
+      for(k=0; k<128; k++){
+        texture[i][j][k]=NULL;
+      }
     }
   }
+
   TTF_Init();
 }
 
 CFont::~CFont(){
   rend = NULL;
-  for(int j=0;j<2;j++){
-    for(int i=0;i<128;i++){
-      if(texture_8[j][i]!=NULL) {
-        SDL_DestroyTexture(texture_8[j][i]);
-        texture_8[j][i]=NULL;
-      }
-      if(texture_10[j][i]!=NULL) {
-        SDL_DestroyTexture(texture_10[j][i]);
-        texture_10[j][i]=NULL;
-      }
-      if(texture_12[j][i]!=NULL) {
-        SDL_DestroyTexture(texture_12[j][i]);
-        texture_12[j][i]=NULL;
-      }
-      if(texture_16[j][i]!=NULL) {
-        SDL_DestroyTexture(texture_16[j][i]);
-        texture_16[j][i]=NULL;
+
+  int i, j, k;
+
+  for(i=0; i<21; i++){
+    for(j=0; j<2; j++){
+      for(k=0; k<128; k++){
+        if(texture[i][j][k]!=NULL){
+          SDL_DestroyTexture(texture[i][j][k]);
+          texture[i][j][k]=NULL;
+        }
       }
     }
   }
+
   if(font!=NULL){
     TTF_CloseFont(font);
     font=NULL;
@@ -45,17 +42,7 @@ CFont::~CFont(){
 }
 
 int CFont::getFontHeight(){
-  switch(fontSize){
-  case 8:
-    return rect_8[106].h;
-  case 10:
-    return rect_10[106].h;
-  case 12:
-    return rect_12[106].h;
-  case 16:
-  default:
-    return rect_16[106].h;
-  }
+  return rect[fontSize][106].h;
 }
 
 int CFont::getStringWidth(char* str){
@@ -63,21 +50,7 @@ int CFont::getStringWidth(char* str){
   int index;
   for(size_t j=0;j<strlen(str);j++){
     index=(int)str[j];
-    switch(fontSize){
-    case 8:
-      i+=rect_8[index].w;
-      break;
-    case 10:
-      i+=rect_10[index].w;
-      break;
-    case 12:
-      i+=rect_12[index].w;
-      break;
-    case 16:
-    default:
-      i+=rect_16[index].w;
-      break;
-    }
+    i+=rect[fontSize][index].w;
   }
   return i;
 }
@@ -87,37 +60,18 @@ int CFont::getStringWidth(string str){
 }
 
 bool CFont::loadFont(char* fname){
-  int i,j;
+  int i,j,k;
   for(j=0;j<2;j++){
-    font = TTF_OpenFont(fname,8);
-    if(font==NULL) return false;
-    for(i=32;i<127;i++){
-      if(!setText((char)i,texture_8[j][i],j)) return false;
-      SDL_QueryTexture(texture_8[j][i],NULL,NULL,&rect_8[i].w,&rect_8[i].h);
+    for(i=6; i<21; i++){
+      font = TTF_OpenFont(fname, i);
+      if(font==NULL) return false;
+      for(k=32; k<127; k++){
+        if(!setText((char)k, texture[i][j][k], j)) return false;
+        SDL_QueryTexture(texture[i][j][k], NULL, NULL, &rect[i][k].w, &rect[i][k].h);
+      }
+      TTF_CloseFont(font);
+      font=NULL;
     }
-    TTF_CloseFont(font);
-    font = TTF_OpenFont(fname,10);
-    if(font==NULL) return false;
-    for(i=32;i<127;i++){
-      if(!setText((char)i,texture_10[j][i],j)) return false;
-      SDL_QueryTexture(texture_10[j][i],NULL,NULL,&rect_10[i].w,&rect_10[i].h);
-    }
-    TTF_CloseFont(font);
-    font = TTF_OpenFont(fname,12);
-    if(font==NULL) return false;
-    for(i=32;i<127;i++){
-      if(!setText((char)i,texture_12[j][i],j)) return false;
-      SDL_QueryTexture(texture_12[j][i],NULL,NULL,&rect_12[i].w,&rect_12[i].h);
-    }
-    TTF_CloseFont(font);
-    font = TTF_OpenFont(fname,16);
-    if(font==NULL) return false;
-    for(i=32;i<127;i++){
-      if(!setText((char)i,texture_16[j][i],j)) return false;
-      SDL_QueryTexture(texture_16[j][i],NULL,NULL,&rect_16[i].w,&rect_16[i].h);
-    }
-    TTF_CloseFont(font);
-    font=NULL;
   }
   return true;
 }
@@ -130,77 +84,22 @@ void CFont::render(int x, int y, char* str, int color, bool rotate) {
   SDL_Rect r;
   SDL_Point p;
 
-  switch(fontSize){
-    case 8:
-      for(i=0;i<strlen(str);i++){
-        index=(int)str[i];
-        r=rect_8[index];
-        r.x=posX;
-        r.y=posY;
-        if(rotate){
-          p.x=0;
-          p.y=0;
-          SDL_RenderCopyEx(rend,texture_8[color][index],NULL,&r,-90.0,&p,SDL_FLIP_NONE);
-          posY-=r.w;
-        } else {
-          SDL_RenderCopy(rend,texture_8[color][index],NULL,&r);
-          posX+=r.w;
-        }
-      }
-      break;
-    case 10:
-      for(i=0;i<strlen(str);i++){
-        index=(int)str[i];
-        r=rect_10[index];
-        r.x=posX;
-        r.y=posY;
-        if(rotate){
-          p.x=0;
-          p.y=0;
-          SDL_RenderCopyEx(rend,texture_10[color][index],NULL,&r,-90.0,&p,SDL_FLIP_NONE);
-          posY-=r.w;
-        } else {
-          SDL_RenderCopy(rend,texture_10[color][index],NULL,&r);
-          posX+=r.w;
-        }
-      }
-      break;
-    case 12:
-      for(i=0;i<strlen(str);i++){
-        index=(int)str[i];
-        r=rect_12[index];
-        r.x=posX;
-        r.y=posY;
-        if(rotate){
-          p.x=0;
-          p.y=0;
-          SDL_RenderCopyEx(rend,texture_12[color][index],NULL,&r,-90.0,&p,SDL_FLIP_NONE);
-          posY-=r.w;
-        } else {
-          SDL_RenderCopy(rend,texture_12[color][index],NULL,&r);
-          posX+=r.w;
-        }
-      }
-      break;
-    case 16:
-    default:
-      for(i=0;i<strlen(str);i++){
-        index=(int)str[i];
-        r=rect_16[index];
-        r.x=posX;
-        r.y=posY;
-        if(rotate){
-          p.x=0;
-          p.y=0;
-          SDL_RenderCopyEx(rend,texture_16[color][index],NULL,&r,-90.0,&p,SDL_FLIP_NONE);
-          posY-=r.w;
-        } else {
-          SDL_RenderCopy(rend,texture_16[color][index],NULL,&r);
-          posX+=r.w;
-        }
-      }
-      break;
+  for(i=0; i<strlen(str); i++){
+    index=(int)str[i];
+    r=rect[fontSize][index];
+    r.x=posX;
+    r.y=posY;
+    if(rotate){
+      p.x=0;
+      p.y=0;
+      SDL_RenderCopyEx(rend, texture[fontSize][color][index], NULL, &r, -90.0, &p, SDL_FLIP_NONE);
+      posY-=r.w;
+    } else {
+      SDL_RenderCopy(rend, texture[fontSize][color][index], NULL, &r);
+      posX+=r.w;
+    }
   }
+
 }
 
 void CFont::render(int x, int y, string s, int color, bool rotate) {
@@ -208,6 +107,8 @@ void CFont::render(int x, int y, string s, int color, bool rotate) {
 }
 
 void CFont::setFontSize(int sz){
+  if(sz<6) sz=6;
+  if(sz>20) sz=20;
   fontSize=sz;
 }
 
