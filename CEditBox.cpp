@@ -14,6 +14,7 @@ CEditBox::CEditBox(){
   szY  = 0;
   numeric = false;
   decimal = false;
+  negative = false;
   active = true;
 
   content.clear();
@@ -30,6 +31,14 @@ CEditBox::~CEditBox(){
 void CEditBox::clear(){
   content.clear();
   cursor=0;
+  decimal=false;
+  negative=false;
+}
+
+void CEditBox::getCaption(int* i, double* d, string* s){
+  if(i!=NULL) *i=atoi(&content[0]);
+  if(d!=NULL) *d=atof(&content[0]);
+  if(s!=NULL) *s=content;
 }
 
 bool CEditBox::logic(int mouseX, int mouseY, int mouseButton){
@@ -77,6 +86,12 @@ int CEditBox::processInput(){
     } else if(numeric && c>47 && c<58) {
       content.insert(content.begin()+cursor, c);
       cursor++;
+    } else if(numeric && c==45 && !negative){
+      if(cursor==0) {
+        negative=true;
+        content.insert(content.begin()+cursor, c);
+        cursor++;
+      }
     } else if(numeric && c==46 && !decimal){
       decimal=true;
       content.insert(content.begin()+cursor, c);
@@ -84,11 +99,13 @@ int CEditBox::processInput(){
     } else if (c == 127) {
       if (cursor<(int)content.size()) {
         if(numeric && decimal && content[cursor]=='.') decimal=false;
+        if(numeric && negative && content[cursor]=='-') negative=false;
         content.erase(cursor, 1);
       }
     } else if (c == 8) {
       if (cursor>0){
         if(numeric && decimal && content[cursor-1]=='.') decimal=false;
+        if(numeric && negative && content[cursor-1]=='-') negative=false;
         content.erase(cursor - 1, 1);
         cursor--;
       }
@@ -161,7 +178,7 @@ void CEditBox::setFontSize(int sz){
   if(sz<6)   sz=6;
   if(sz>20)  sz=20;
   fontSize = sz;
-  szY = sz+7;
+  szY = sz+4;
 }
 
 void CEditBox::setInput(CInput* i){

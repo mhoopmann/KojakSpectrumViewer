@@ -21,6 +21,7 @@ public:
 
   int charge;
   int scanNumber;
+  bool clear;
   double mass;
 
   bool            checkSeries (int charge, int ion);

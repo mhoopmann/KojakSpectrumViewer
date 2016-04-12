@@ -9,21 +9,12 @@
 #include "CFont.h"
 #include "CInput.h"
 #include "CTable.h"
+#include "Structs.h"
 
 #include <string>
 #include <vector>
 
 using namespace std;
-
-typedef struct kvFilter {
-  string colID;
-  char type;    //0=numeric, 1=text
-  char filter;  //0=above, 1=below, 2=between, 3=exactly, 4=contains
-  double dLow;
-  double dHigh;
-  string sLow;
-  string sHigh;
-} kvFilter;
 
 class CFilterManager {
 public:
@@ -34,6 +25,9 @@ public:
   int posX;
   int posY;
 
+  vector<kvFilter> vChosen;
+
+  void clear();
   void init(CTable* t);
   int  logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1);
   int  processInput();
@@ -57,7 +51,7 @@ private:
   CEditBox  valueB;
 
   vector<kvFilter> vAvail;
-  vector<kvFilter> vChosen;
+  vector<CButton>  vButDel;
 
 };
 

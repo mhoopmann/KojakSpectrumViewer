@@ -99,13 +99,8 @@ void CViewer::init(){
   aboutDlg.setFont(&font);
   aboutDlg.init();
   
-  //data.readPepXML("C:\\Users\\mhoopman\\Documents\\Software Development\\KojakSpectrumViewer\\KojakSpectrumViewer\\Release\\112015-Standard-A-01.pep.xml");
-  //data.readPepXML("C:\\Users\\mhoopman\\Documents\\Software Development\\KojakSpectrumViewer\\KojakSpectrumViewer\\Release\\Q_2013_1023_RJ_11_zelter16.pep.xml");
-  //data.readPepXML("C:\\Users\\mhoopman\\Documents\\Software Development\\KojakSpectrumViewer\\KojakSpectrumViewer\\Release\\VE122812_HumanIIH_40Ac-11.pep.xml",&dt);
-  //data.readPepXML("C:\\Users\\mhoopman\\Documents\\Software Development\\KojakSpectrumViewer\\KojakSpectrumViewer\\Release\\Q_2013_1016_RJ_09.pep.xml",&dt);
   dataIndex=0;
   dt.selected=0;
-  //resetSpectrum();
   sg.setFont(&font);
 
   sortDlg.setDisplay(display);
@@ -187,6 +182,11 @@ bool CViewer::logic(){
     case 1:
       state=0;
       return true;
+    case 2:
+      state=0;
+      dataIndex=dt.selected;
+      resetSpectrum();
+      return true;
     default:
       return true;
     }
@@ -230,11 +230,11 @@ bool CViewer::logic(){
         return true;
       case 3: //next button
         dataIndex++;
-        if(dataIndex==data.size()) dataIndex=(int)(data.size()-1);
+        if(dataIndex==dt.size(false)) dataIndex=(int)(dt.size(false)-1);
         dt.selected=dataIndex;
         resetSpectrum();
         return true;
-      case 4: //jump box
+      case 4: //about dialog
         state=3;
         return true;
       case 5: //sort/filter
@@ -282,6 +282,8 @@ bool CViewer::logic(){
     return true;
   }
 
+  tb.processInput();
+  /*
   int id;
   switch(tb.processInput()){
     case 1:
@@ -294,6 +296,7 @@ bool CViewer::logic(){
     default:
       break;
   }
+  */
   if(input->getKeyState(KEY_Q))return false;
   return true;
 }
@@ -359,12 +362,22 @@ bool CViewer::render(){
 
 void CViewer::resetSpectrum(){
   //fragList.setPeptide(data[dataIndex].peptideA,1);
-  scanNumber = data[dataIndex].scanNumber;
-  pepBox.setPSM(data[dataIndex]);
-  Spectrum spec = data.getSpectrum(dataIndex);
+  int tIndex=dt.getPSMID(dataIndex);
+  if(tIndex<0) {
+    sg.spectrum.clear();
+    sg.resetView();
+    pepBox.clear=true;
+    return;
+  }
+
+  pepBox.clear=false;
+
+  scanNumber = data[tIndex].scanNumber;
+  pepBox.setPSM(data[tIndex]);
+  Spectrum spec = data.getSpectrum(tIndex);
   pepBox.scanNumber = spec.getScanNumber();
-  pepBox.mass = data[dataIndex].mass;
-  pepBox.charge = (int)data[dataIndex].charge;
+  pepBox.mass = data[tIndex].mass;
+  pepBox.charge = (int)data[tIndex].charge;
   sg.spectrum.clear();
   for(int i=0;i<spec.size();i++){
     if(spec[i].intensity==0) continue;

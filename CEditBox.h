@@ -20,8 +20,10 @@ public:
 
   bool  active;
   bool  decimal;
+  bool  negative;
   bool  numeric;
 
+  void getCaption   (int* i, double* d, string* s);
   void clear        ();
   bool logic        (int mouseX, int mouseY, int mouseButton);
   int  processInput ();
@@ -42,7 +44,7 @@ private:
 
   string  content;
   int     cursor;
-  int   fontSize;
+  int     fontSize;
   bool    lockButton;
   int     szY;
   Uint32  timer;

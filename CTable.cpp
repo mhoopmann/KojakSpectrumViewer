@@ -57,7 +57,8 @@ void CTable::addDataPoint(size_t row, kvTableDP& dp){
     if(w>columns[dp.ID].width) columns[dp.ID].width=w;
     break;
   case 1:
-    sprintf(str,"%.4g",dp.dVal);
+    if(dp.dVal<0.0001) sprintf(str,"%.4g",dp.dVal);
+    else sprintf(str, "%.4lf", dp.dVal);
     w=font->getStringWidth(str)+4;
     if(w>columns[dp.ID].width) columns[dp.ID].width=w;
     break;
@@ -68,12 +69,65 @@ void CTable::addDataPoint(size_t row, kvTableDP& dp){
   }
   font->fontSize=fontSize;
   rows[row].dp->push_back(dp);
+  rowsFilt[row].dp->push_back(dp);
 }
 
 void CTable::addRow(size_t index){
   kvTableRow r;
   r.psmID=index;
   rows.push_back(r);
+  rowsFilt.push_back(r);
+}
+
+void CTable::applyFilter(kvFilter f){
+  size_t i;
+  int colID;
+  vector<kvTableRow>  r;
+
+  //Get the column we are filtering on
+  for(i=0; i<columns.size(); i++){
+    if(columns[i].header.compare(f.colID)==0) break;
+  }
+  if(i==columns.size()) return; //case of column doesn't exist
+  colID=columns[i].ID;
+
+  for(i=0; i<rowsFilt.size(); i++){
+    switch(f.filter){
+    case 0:
+      if(f.type==0){
+        if(rowsFilt[i][colID].iVal>f.iLow) r.push_back(rowsFilt[i]);
+      } else {
+        if(rowsFilt[i][colID].dVal>f.dLow) r.push_back(rowsFilt[i]);
+      }
+      break;
+    case 1:
+      if(f.type==0){
+        if(rowsFilt[i][colID].iVal<f.iLow) r.push_back(rowsFilt[i]);
+      } else {
+        if(rowsFilt[i][colID].dVal<f.dLow) r.push_back(rowsFilt[i]);
+      }
+      break;
+    case 2:
+      if(f.type==0){
+        if(rowsFilt[i][colID].iVal>=f.iLow && rowsFilt[i][colID].iVal<=f.iHigh) r.push_back(rowsFilt[i]);
+      } else {
+        if(rowsFilt[i][colID].dVal>=f.dLow && rowsFilt[i][colID].dVal<=f.dHigh) r.push_back(rowsFilt[i]);
+      }
+      break;
+    case 3:
+      if(rowsFilt[i][colID].sVal.find(f.sLow)!=string::npos) r.push_back(rowsFilt[i]);
+      break;
+    case 4:
+      if(rowsFilt[i][colID].sVal.compare(f.sLow)==0) r.push_back(rowsFilt[i]);
+      break;
+    default:
+      break;
+    }
+  }
+
+  rowsFilt=r;
+  fixLayout();
+
 }
 
 void CTable::clear(){
@@ -89,6 +143,10 @@ void CTable::clear(){
   scrollOffsetH=0;
 }
 
+void CTable::clearFilter(){
+  rowsFilt=rows;
+}
+
 kvTableColumn& CTable::col(size_t index){
   return columns[index];
 }
@@ -101,7 +159,7 @@ void CTable::fixLayout(){
   
   //Vertical Scrolling
   viewSize = szY-26;
-  contentSize = (int)rows.size()*16; //size of entire text content
+  contentSize = (int)rowsFilt.size()*16; //size of entire text content
   if(viewSize>0 && contentSize>viewSize) {
     showScrollbarV=true;
     
@@ -145,6 +203,11 @@ int CTable::getColumn(string str){
   }
   if(i==columns.size()) return -1;
   return (int)i;
+}
+
+int CTable::getPSMID(size_t index){
+  if(index>=rowsFilt.size()) return -1;
+  return (int)rowsFilt[index].psmID;
 }
 
 int CTable::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
@@ -210,7 +273,7 @@ int CTable::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
   if(mouseButton==1 && mouseX>=posX && mouseX<=(posX+szX-10) && mouseY>=posY+16 && mouseY<=(posY+szY-10)){
     int i=mouseY-posY-16+(int)(scrollOffsetV*scrollJumpV);
     i/=16;
-    if(i<(int)rows.size()) selected = (int)rows[i].psmID;
+    if(i<(int)rowsFilt.size()) selected = i;
     return 2;
   } 
 
@@ -281,14 +344,14 @@ bool CTable::render(){
 
   //Display table contents
   SDL_SetRenderDrawColor(display->renderer,255,255,255,255);
-  for(j=0;j<rows.size();j++){
+  for(j=0;j<rowsFilt.size();j++){
 
     r.x=0-(int)(scrollOffsetH*scrollJumpH);
     r.y=(int)j*16-(int)(scrollOffsetV*scrollJumpV);
     if(r.y>vp.h) break;
     if(r.y+16<0) continue;
     
-    if(selected == (int)rows[j].psmID) bSelected=true;
+    if(selected == (int)j) bSelected=true;
     else bSelected=false;
 
     if(bSelected){
@@ -314,10 +377,10 @@ bool CTable::render(){
       if(!bSelected) SDL_RenderFillRect(display->renderer,&r);
 
       //find datapoint
-      for(k=0;k<rows[j].dp->size();k++){
-        if(rows[j][k].ID==columns[i].ID) break;
+      for(k=0;k<rowsFilt[j].dp->size();k++){
+        if(rowsFilt[j][k].ID==columns[i].ID) break;
       }
-      if(k==rows[j].dp->size()) {
+      if(k==rowsFilt[j].dp->size()) {
         r.x+=columns[i].width+1;
         continue;
       }
@@ -325,15 +388,16 @@ bool CTable::render(){
       //draw value
       switch(columns[i].dataType){
       case 0:
-        sprintf(str,"%d",rows[j][k].iVal);
+        sprintf(str,"%d",rowsFilt[j][k].iVal);
         font->render(r.x+2,r.y+2,str,1);
         break;
       case 1:
-        sprintf(str,"%.4g",rows[j][k].dVal);
+        if(rowsFilt[j][k].dVal<0.0001) sprintf(str, "%.4g", rowsFilt[j][k].dVal);
+        else sprintf(str, "%.4lf", rowsFilt[j][k].dVal);
         font->render(r.x+2,r.y+2,str,1);
         break;
       default:
-        font->render(r.x+2,r.y+2,rows[j][k].sVal,1);
+        font->render(r.x+2,r.y+2,rowsFilt[j][k].sVal,1);
         break;
       }
 
@@ -388,7 +452,7 @@ void CTable::setFont(CFont* f){
 
 size_t CTable::size(bool col){
   if(col) return columns.size();
-  else return rows.size();
+  else return rowsFilt.size();
 }
 
 void CTable::sort(string colID, bool highToLow){
@@ -402,7 +466,8 @@ void CTable::sort(string colID, bool highToLow){
   sortDir=highToLow;
   sortDataType=columns[i].dataType;
 
-  qsort(&rows[0],rows.size(),sizeof(kvTableRow),compar);
+  qsort(&rowsFilt[0],rowsFilt.size(),sizeof(kvTableRow),compar);
+  selected=0;
 }
 
 int CTable::compar(const void* p1, const void* p2){

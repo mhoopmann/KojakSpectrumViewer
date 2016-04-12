@@ -167,6 +167,10 @@ void PepXMLParser3::startElement(const XML_Char *el, const XML_Char **attr){
 		s = getAttrValue("probability", attr);
 		psm.probability=atof(&s[0]);
 
+  } else if(isElement("peptideprophet_summary", el)){
+
+    bPepProphet=true;
+
 	} else if (isElement("search_hit",el)) {
 
 		s = getAttrValue("hit_rank", attr);

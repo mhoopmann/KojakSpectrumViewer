@@ -4,6 +4,7 @@
 #include "CActiveFocus.h"
 #include "CDisplay.h"
 #include "CFont.h"
+#include "Structs.h"
 #include <string>
 #include <vector>
 
@@ -76,7 +77,9 @@ public:
   int   addColumn   (string str, char dataType, bool visible=true);
   void  addDataPoint(size_t row, kvTableDP& dp);
   void  addRow      (size_t index);
+  void  applyFilter (kvFilter f);
   void  clear       ();
+  void  clearFilter ();
 
   kvTableColumn& col(size_t index);
 
@@ -84,6 +87,7 @@ public:
 
   int getColumn(char* str);
   int getColumn(string str);
+  int getPSMID(size_t index); //psm_id of filtered row.
 
   int logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1);
   bool render();
@@ -101,6 +105,7 @@ private:
 
   vector<kvTableColumn> columns;
   vector<kvTableRow>  rows; 
+  vector<kvTableRow>  rowsFilt;
 
   int     lastMouseY;
   double  scrollJumpV;

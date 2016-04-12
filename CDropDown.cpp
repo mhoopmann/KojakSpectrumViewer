@@ -81,7 +81,6 @@ int CDropDown::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
   if(!active) return 0;
 
   if(mouseButton1 && dropped && showScrollbarV){
-    //printf("%d %d :: %d %d\n",mouseX,mouseY,szX-8,posY+szY+scrollOffsetV+1);
     //grabbed scrollbar
     if(mouseX>=posX+szX-8 && mouseX<=posX+szX-2 && mouseY>=posY+szY+scrollOffsetV+1 && mouseY<=posY+szY+scrollOffsetV+thumbHeightV+1){
       if(scrollLockV){
@@ -101,13 +100,15 @@ int CDropDown::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
       lastMouseY=mouseY;
       return 1;
     }
-  } 
+  }
 
-  if(mouseButton==1 && scrollLockV){
+  //release scrollbar
+  if(mouseButton==1 && scrollLockV){ 
     scrollLockV=false;
     return 1;
   }
 
+  //selected an item
   if(mouseButton==1 && dropped && mouseX>=posX && mouseX<=(posX+szX-10) && mouseY>=posY+szY+1 && mouseY<=posY+szY+szDrop-1){
     int i=mouseY-posY-szY+(int)(scrollOffsetV*scrollJumpV);
     i/=(fontSize+3);
@@ -116,11 +117,14 @@ int CDropDown::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
     return 2;
   } 
 
+  //clicked drop button
   if(button.logic(mouseX,mouseY,mouseButton)){
     if(dropped) dropped=false;
     else dropped=true;
+    return 1;
   }
 
+  //Check for highlight
   if(dropped && mouseX>=posX && mouseX<=(posX+szX-10) && mouseY>=posY+szY+1 && mouseY<=posY+szY+szDrop-1){
     int i=mouseY-posY-szY+(int)(scrollOffsetV*scrollJumpV);
     i/=(fontSize+3);
@@ -129,7 +133,14 @@ int CDropDown::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
     highlight=-1;
   }
 
+  //if mouse is clicked anywhere in space, but there is no function, just do nothing
+  if(mouseButton1 && mouseX>=posX && mouseX<=posX+szX){
+    if(dropped && mouseY>=posY && mouseY<=posY+szY+szDrop) return 1;
+    else if(mouseY>=posY && mouseY<=posY+szY) return 1;
+  }
+
   scrollLockV=false;
+  if(mouseButton1 && dropped) dropped=false; //mouse clicked anywhere else closes drop.
 
   return 0;
 }
@@ -250,7 +261,7 @@ void CDropDown::setFontSize(int sz){
   if(sz<6)   sz=6;
   if(sz>20)  sz=20;
   fontSize = sz;
-  szY = sz+7;
+  szY = sz+4;
 }
 
 size_t CDropDown::size(){

@@ -12,6 +12,7 @@ CPeptideBox::CPeptideBox(){
 
   charge=0;
   scanNumber=0;
+  clear=false;
   mass=0;
 
   cbPepA.posX=4;
@@ -32,6 +33,8 @@ CPeptideBox::CPeptideBox(){
       cbIons[i][j].sz=12;
     }
   }
+  cbIons[0][1].checked=true;
+  cbIons[0][4].checked=true;
 
   fragPepA.posX=4;
   fragPepA.posY=113;
@@ -106,7 +109,6 @@ void CPeptideBox::fixLayout(){
     scrollOffsetH = 0;
   } else showScrollbarH=false;
 
-  
 }
 
 CFragmentLists* CPeptideBox::getIonSeries(bool pepB){
@@ -119,6 +121,8 @@ CFragmentLists* CPeptideBox::getIonSeries(bool pepB){
 
 int CPeptideBox::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
   int i,j;
+
+  if(clear) return 0;
 
   //this object is in a viewport. Check logic relative to the viewport
   mouseX-=posX;
@@ -234,6 +238,13 @@ void CPeptideBox::render(int x, int y){
   r.y=0;
   SDL_SetRenderDrawColor(display->renderer,255,255,255,255);
   SDL_RenderFillRect(display->renderer,&r);
+
+  //if there is nothing to display, return now
+  if(clear) {
+    SDL_RenderSetViewport(display->renderer, &origVP);
+    font->fontSize=fontSize;
+    return;
+  }
 
   //Render everything in the viewport
   //Render the scan information

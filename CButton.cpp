@@ -45,6 +45,7 @@ bool CButton::logic(int mouseX, int mouseY, int mouseButton){
   
 void CButton::render(){
   SDL_Rect r;
+  int fontSize = font->fontSize;
 
   //Draw background
   r.h=szY;
@@ -86,6 +87,8 @@ void CButton::render(){
     font->setFontSize(16);
     font->render(r.x,r.y,caption);
   }
+
+  font->fontSize = fontSize;
 
 }
 

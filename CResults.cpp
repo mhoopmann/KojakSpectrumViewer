@@ -105,6 +105,7 @@ int CResults::readPepXML(char* fn, CTable* t){
 
   p.readFile(fn);
   for(i=0;i<p.size();i++){
+    if(p[i].psms->size()==0) continue;
     psm.clear();
     psm.scanNumber=p[i].scanNumber;
     psm.mass=p[i].precursorNeutMass;
@@ -166,6 +167,21 @@ int CResults::readPepXML(char* fn, CTable* t){
     if(dp.ID==-1) dp.ID=t->addColumn("Scan",0,true);
     dp.iVal=p[i].scanNumber;
     t->addDataPoint(index,dp);
+
+    //Probability - Regular if not iProphet
+    if(p.hasIProphet()){
+      dp.clear();
+      dp.ID=t->getColumn("iProb");
+      if(dp.ID==-1) dp.ID=t->addColumn("iProb", 1, true);
+      dp.dVal=p[i][0].iProphetProbability;
+      t->addDataPoint(index, dp);
+    } else if(p.hasPepProphet()){
+      dp.clear();
+      dp.ID=t->getColumn("prob");
+      if(dp.ID==-1) dp.ID=t->addColumn("prob", 1, true);
+      dp.dVal=p[i][0].probability;
+      t->addDataPoint(index, dp);
+    }
 
     //Precursor Mass
     dp.clear();

@@ -27,6 +27,8 @@ CFragmentLists::CFragmentLists(){
       bShowIons[i][j]=false;
     }
   }
+  bShowIons[0][1]=true;
+  bShowIons[0][4]=true;
 
   for(i=0;i<128;i++)  aaMass[i]=0;
   aaMass['A']=71.0371103;

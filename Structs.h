@@ -113,4 +113,16 @@ typedef struct kvTextLine {
   int width;
 } kvTextLine;
 
+typedef struct kvFilter {
+  string colID;
+  char type;    //0=int, 1=double, 2=text
+  char filter;  //0=above, 1=below, 2=between, 3=contains, 4=exactly
+  double dLow;
+  double dHigh;
+  int iLow;
+  int iHigh;
+  string sLow;
+  string sHigh;
+} kvFilter;
+
 #endif

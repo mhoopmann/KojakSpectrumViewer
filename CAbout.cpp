@@ -52,8 +52,8 @@ void CAbout::render(){
   font->fontSize=20;
   font->render(150, 20, "Kojak Spectrum Viewer", 1);
   font->fontSize=15;
-  font->render(150, 42, "Version 0.9 (dev build)", 1);
-  font->render(150, 58, "April 8, 2016", 1);
+  font->render(150, 42, "Version 0.9 (alpha 2)", 1);
+  font->render(150, 58, "April 11, 2016", 1);
   font->render(150, 74, "Copyright (C) 2016, Michael Hoopmann, Institute for Systems Biology",1);
   font->render(150, 90, "For more information, visit: http://kojak-ms.org",1);
 

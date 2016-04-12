@@ -18,6 +18,8 @@ CSortFilter::~CSortFilter(){
 
 void CSortFilter::clear(){
   ddSort.clear();
+  fm.clear();
+  if(dt!=NULL) dt->clearFilter();
 }
 
 void CSortFilter::init(CTable* t){
@@ -32,27 +34,27 @@ void CSortFilter::init(CTable* t){
   butBack.szY=50;
 
   butApply.setCaption("Apply");
-  butBack.setCaption("Back");
+  butBack.setCaption("Cancel");
 
   cbSortAsc.posX=310;
-  cbSortAsc.posY=20;
+  cbSortAsc.posY=52;
   cbSortAsc.sz=16;
   cbSortAsc.caption="Ascending";
-  cbSortAsc.checked=false;
+  cbSortAsc.checked=true;
 
   dt=t;
 
   ddSort.posX=150;
-  ddSort.posY=20;
+  ddSort.posY=50;
   ddSort.szX=150;
   ddSort.szDrop=200;
-  ddSort.setFontSize(14);
-  ddSort.addItem("none");
+  ddSort.setFontSize(16);
 
   size_t i;
   for(i=0;i<dt->size(true);i++){
     ddSort.addItem(dt->col(i).header);
   }
+  ddSort.selected=0;
 
   fm.posX = 150;
   fm.posY = 100;
@@ -62,8 +64,10 @@ void CSortFilter::init(CTable* t){
 
 int CSortFilter::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
   if(butApply.logic(mouseX,mouseY,mouseButton)) {
+    dt->clearFilter();
+    for(size_t i=0; i<fm.vChosen.size(); i++) dt->applyFilter(fm.vChosen[i]);
     dt->sort(ddSort.getSelected(),!cbSortAsc.checked);
-    return 1;
+    return 2;
   }
   if(butBack.logic(mouseX,mouseY,mouseButton)) {
     return 1;
@@ -75,7 +79,6 @@ int CSortFilter::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton
     return 0;
   }
 
-
   switch(fm.logic(mouseX, mouseY, mouseButton, mouseButton1)){
   case 4:
     return 0;
@@ -83,10 +86,7 @@ int CSortFilter::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton
     break;
   }
 
-  switch(fm.processInput()){
-  default:
-    break;
-  }
+  fm.processInput();
 
   return 0;
 }
@@ -94,6 +94,8 @@ int CSortFilter::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton
 void CSortFilter::render(){
   //always full screen
   SDL_Rect r;
+  int fontSize = font->fontSize;
+  font->fontSize = 20;
 
   //Clear the entire window
   SDL_RenderGetViewport(display->renderer,&r);
@@ -110,13 +112,21 @@ void CSortFilter::render(){
   butBack.render();
 
   //Draw the filter components
+  r.x=150;
+  r.y=85;
+  display->getWindowSize(r.w, r.h);
+  r.w-=170;
+  r.h=3;
+  SDL_SetRenderDrawColor(display->renderer, 85, 98, 112, 255);
+  SDL_RenderFillRect(display->renderer, &r);
   fm.render();
   
   //Draw the sort components
+  font->render(150, 20, "Sort PSMs:", 1);
   ddSort.render();
   cbSortAsc.render();
 
-  
+  font->fontSize = fontSize;
 
 }
 
