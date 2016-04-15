@@ -222,7 +222,7 @@ int CResults::readPepXML(char* fn, CTable* t){
     if(dp.ID==-1) dp.ID=t->addColumn("Protein",2,true);
     dp.sVal=p.getProtein(i,0);
     if(p[i][0].peptide->proteins->size()>1){
-      sprintf(str," +%d",p[i][0].peptide->proteins->size()-1);
+      sprintf(str," +%d",(int)p[i][0].peptide->proteins->size()-1);
       dp.sVal+=str;
     }
     t->addDataPoint(index,dp);
@@ -245,7 +245,7 @@ int CResults::readPepXML(char* fn, CTable* t){
       if(dp.ID==-1) dp.ID=t->addColumn("ProteinB",2,true);
       dp.sVal=p.getProtein(i,0,1,true);
       if(p[i][0].xlPeptide->proteins->size()>1){
-        sprintf(str," +%d",p[i][0].xlPeptide->proteins->size()-1);
+        sprintf(str," +%d",(int)p[i][0].xlPeptide->proteins->size()-1);
         dp.sVal+=str;
       }
       t->addDataPoint(index,dp);
