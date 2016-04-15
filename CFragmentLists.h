@@ -44,10 +44,6 @@ private:
   CDisplay* display;
   CFont* font;
 
-  //CList bIon[1];
-  //CList numList;
-  //CList yIon[1];
-
   double** aFrag;
   double** bFrag;
   double** cFrag;

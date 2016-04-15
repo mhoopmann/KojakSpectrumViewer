@@ -12,6 +12,7 @@ CButton::CButton(){
   imgIndex=-1;
   posX=0;
   posY=0;
+  szFont=16;
   szX=0;
   szY=0;
   caption="";
@@ -46,6 +47,7 @@ bool CButton::logic(int mouseX, int mouseY, int mouseButton){
 void CButton::render(){
   SDL_Rect r;
   int fontSize = font->fontSize;
+  font->fontSize=szFont;
 
   //Draw background
   r.h=szY;
@@ -84,7 +86,6 @@ void CButton::render(){
   } else {
     r.x=posX+(szX-textWidth)/2;
     r.y=posY+(szY-textHeight)/2;
-    font->setFontSize(16);
     font->render(r.x,r.y,caption);
   }
 
@@ -93,10 +94,12 @@ void CButton::render(){
 }
 
 void CButton::setCaption(char* str){
+  int fontSize=font->fontSize;
   caption=str;
-  font->setFontSize(16);
+  font->fontSize=szFont;
   textWidth=font->getStringWidth(str);
   textHeight=font->getFontHeight();
+  font->fontSize=fontSize;
 }
 
 void CButton::setCaption(string str){

@@ -55,6 +55,8 @@ void CFilterManager::init(CTable* t){
 
   kvFilter f;
   size_t i;
+  vAvail.clear();
+  item.clear();
   for(i=0; i<t->size(true); i++){
     f.colID=t->col(i).header;
     f.type=t->col(i).dataType;

@@ -7,6 +7,8 @@ CDataSet::CDataSet(){
   maxX=0;
   minY=0;
   maxY=0;
+  tolUnit=0;
+  tol=0.01;
 }
 
 CDataSet::CDataSet(const CDataSet& d){
@@ -76,8 +78,17 @@ int CDataSet::findMass(double mass){
 
   if(sz==0) return -1;
 
-  double lb=mass-0.01;
-  double ub=mass+0.01;
+  double lb;
+  double ub;
+
+  if(tolUnit==0){
+    lb=mass-tol;
+    ub=mass+tol;
+  } else {
+    double d=mass*tol/1e6;
+    lb=mass-d;
+    ub=mass+d;
+  }
 
   //binary search to first mass within boundaries
   while(data->at(mid).x<lb || data->at(mid).x>ub){
@@ -131,6 +142,16 @@ double CDataSet::getMinX(){
 
 double CDataSet::getMinY(){
   return minY;
+}
+
+void CDataSet::getTolerance(double& val, char& unit){
+  val=tol;
+  unit=tolUnit;
+}
+
+void CDataSet::setTolerance(double value, char unit){
+  tol=value;
+  tolUnit=unit;
 }
 
 size_t CDataSet::size(){

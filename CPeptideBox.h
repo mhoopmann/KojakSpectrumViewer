@@ -24,9 +24,12 @@ public:
   bool clear;
   double mass;
 
+  string metaTol;
+
   bool            checkSeries (int charge, int ion);
   void            fixLayout   ();
   CFragmentLists* getIonSeries(bool pepB=false);
+  void            init        ();
   int             logic       (int mouseX, int mouseY, int mouseButton, bool mouseButton1);
   void            render      (int x, int y);
   void            setDisplay  (CDisplay* d);

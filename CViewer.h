@@ -11,6 +11,7 @@
 #include "CInput.h"
 #include "CPeptideBox.h"
 #include "CResults.h"
+#include "CSettings.h"
 #include "CSlider.h"
 #include "CSortFilter.h"
 #include "CSpectrumGraph.h"
@@ -50,6 +51,7 @@ private:
   CToolbar tb;
   CSlider sliderH,sliderV;
   CSortFilter sortDlg;
+  CSettings setDlg;
   //SDL_Rect slider;
 
   CActiveFocus* activeFocus;

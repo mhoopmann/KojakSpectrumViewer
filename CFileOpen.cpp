@@ -80,6 +80,8 @@ void CFileOpen::fixLayout(){
 void CFileOpen::init(){
   int i;
 
+  bFirst=true;
+
   butOpen.posX=0;
   butOpen.posY=0;
   butOpen.szX=120;
@@ -97,8 +99,10 @@ void CFileOpen::init(){
 
   butOpen.setCaption("Open");
   butRecent.setCaption("Recent");
-  butBack.setCaption("Back");
+  butBack.setCaption("About");
   butLoad.setCaption("Load");
+
+  aboutDlg.init();
 
   butLoad.posX=50;
   butLoad.szX=64;
@@ -153,14 +157,30 @@ void CFileOpen::init(){
 }
 
 int CFileOpen::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
+  if(mode==2) {
+    switch(aboutDlg.logic(mouseX, mouseY, mouseButton, mouseButton1)){
+    case 1:
+      mode=0;
+      break;
+    default:
+      break;
+    }
+    return 0;
+  }
+
   if(butOpen.logic(mouseX,mouseY,mouseButton)) {
     mode=1;
     buildFileList(".");
     return 0;
   }
   if(butBack.logic(mouseX,mouseY,mouseButton)) {
-    mode=0;
-    return 1;
+    if(bFirst) {
+      mode=2;
+      return 0;
+    } else {
+      mode=0;
+      return 1;
+    }
   }
   if(butDirUp.logic(mouseX,mouseY,mouseButton)){
     chdir("..");
@@ -172,6 +192,10 @@ int CFileOpen::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
   }
   if(butLoad.active && butLoad.logic(mouseX,mouseY,mouseButton)){
     strcpy(fileName,&vFileList[listFile.getSelectedItem().value].name[0]);
+    if(bFirst) {
+      butBack.setCaption("Back");
+      bFirst=false;
+    }
     return 2;
   }
   switch(listFile.logic(mouseX,mouseY,mouseButton,mouseButton1)){
@@ -219,6 +243,12 @@ int CFileOpen::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
 }
 
 void CFileOpen::render(){
+
+  if(mode==2) {
+    aboutDlg.render();
+    return;
+  }
+
   //always full screen
   SDL_Rect r;
   int fontSize = font->fontSize;
@@ -263,6 +293,7 @@ void CFileOpen::setDisplay(CDisplay* d){
   listDir.setDisplay(d);
   listFile.setDisplay(d);
   tbPath.setDisplay(d);
+  aboutDlg.setDisplay(d);
 }
 
 void CFileOpen::setFocus(CActiveFocus* f){
@@ -273,6 +304,7 @@ void CFileOpen::setFocus(CActiveFocus* f){
   butDirUp.setFocus(f);
   butLoad.setFocus(f);
   tbPath.setFocus(f);
+  aboutDlg.setFocus(f);
 }
 
 void CFileOpen::setFont(CFont* f){
@@ -285,6 +317,7 @@ void CFileOpen::setFont(CFont* f){
   listDir.setFont(f);
   listFile.setFont(f);
   tbPath.setFont(f);
+  aboutDlg.setFont(f);
 }
 
 void CFileOpen::setGfx(CGfxCollection* g){

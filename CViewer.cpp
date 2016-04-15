@@ -89,6 +89,7 @@ void CViewer::init(){
   pepBox.posY=32;
   pepBox.szX=295;
   pepBox.szY=568;
+  pepBox.init();
 
   fileDlg.setDisplay(display);
   fileDlg.setFont(&font);
@@ -107,6 +108,11 @@ void CViewer::init(){
   sortDlg.setFont(&font);
   sortDlg.setInput(input);
   sortDlg.init(&dt);
+
+  setDlg.setDisplay(display);
+  setDlg.setFont(&font);
+  setDlg.setInput(input);
+  setDlg.init();
 
   tb.setDisplay(display);
   tb.setFont(&font);
@@ -145,6 +151,7 @@ bool CViewer::logic(){
   int mouseButton=0;
   int val;
   bool mouseButton1;
+  char str[64];
 
   if(quitter) return false;
   if(!focused) return true;
@@ -203,6 +210,24 @@ bool CViewer::logic(){
     }
   }
 
+  if(state==4){
+    val=setDlg.logic(mouseX, mouseY, mouseButton, mouseButton1);
+    switch(val){
+    case 1:
+      state=0;
+      return true;
+    case 2:
+      state=0;
+      sg.spectrum.setTolerance(setDlg.tol, setDlg.tolUnit);
+      if(setDlg.tolUnit==0) sprintf(str, "Tolerance: %g Da",setDlg.tol);
+      else sprintf(str, "Tolerance: %g ppm", setDlg.tol);
+      pepBox.metaTol=str;
+      return true;
+    default:
+      return true;
+    }
+  }
+
   //only process other components if sliders are not locked
   if(!sliderV.checkLocked() && !sliderH.checkLocked()){
 
@@ -241,6 +266,10 @@ bool CViewer::logic(){
         state=2;
         return true;
       case 6: //anywhere in the toolbar
+        return true;
+      case 7: //settings dialog
+        state=4;
+        sg.spectrum.getTolerance(setDlg.tol, setDlg.tolUnit);
         return true;
       default:
         break;
@@ -323,20 +352,23 @@ void CViewer::processEvent(SDL_Event& e){
 bool CViewer::render(){
   SDL_Rect r;
 
-  if(state==1){
+  switch(state){
+  case 1:
     fileDlg.render();
     return true;
-  }
-
-  if(state==2){
+  case 2:
     sortDlg.render();
     return true;
-  }
-
-  if(state==3){
+  case 3:
     aboutDlg.render();
     return true;
+  case 4:
+    setDlg.render();
+    return true;
+  default:
+    break;
   }
+
 
   //Clear the entire window
   SDL_RenderGetViewport(display->renderer,&r);
@@ -393,6 +425,7 @@ void CViewer::setDisplay(CDisplay *d){
   fileDlg.setDisplay(d);
   sortDlg.setDisplay(d);
   aboutDlg.setDisplay(d);
+  setDlg.setDisplay(d);
 }
 
 void CViewer::setFocus(CActiveFocus* f){
@@ -404,12 +437,14 @@ void CViewer::setFocus(CActiveFocus* f){
   dt.setFocus(f);
   sortDlg.setFocus(f);
   aboutDlg.setFocus(f);
+  setDlg.setFocus(f);
 }
 
 void CViewer::setInput(CInput* inp){
   input=inp;
   sg.setInput(inp);
   sortDlg.setInput(inp);
+  setDlg.setInput(inp);
 }
 
 bool CViewer::viewerMain(){

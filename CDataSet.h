@@ -36,11 +36,15 @@ public:
   double getMaxY();
   double getMinX();
   double getMinY();
+  void getTolerance(double& val, char& unit);
+  void setTolerance(double value, char unit);
   size_t size();
 
 private:
   vector<sDataPoint>* data;
 
+  char tolUnit; //0=Da, 1=ppm
+  double tol;
   double minX,maxX;
   double minY,maxY;
 

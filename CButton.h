@@ -18,6 +18,7 @@ public:
   bool  active;
   int   posX;
   int   posY;
+  int   szFont;
   int   szX;
   int   szY;
 

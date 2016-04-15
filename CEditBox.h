@@ -28,6 +28,10 @@ public:
   bool logic        (int mouseX, int mouseY, int mouseButton);
   int  processInput ();
   void render       ();
+  void setCaption   (const char* str);
+  void setCaption   (int i);
+  void setCaption   (double d);
+  void setCaption   (string s);
   void setDisplay   (CDisplay* d);
   void setFocus     (CActiveFocus* f);
   void setFont      (CFont* f);

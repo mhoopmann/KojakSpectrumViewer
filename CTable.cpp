@@ -80,7 +80,7 @@ void CTable::addRow(size_t index){
 }
 
 void CTable::applyFilter(kvFilter f){
-  size_t i;
+  size_t i,j;
   int colID;
   vector<kvTableRow>  r;
 
@@ -92,33 +92,37 @@ void CTable::applyFilter(kvFilter f){
   colID=columns[i].ID;
 
   for(i=0; i<rowsFilt.size(); i++){
+    for(j=0; j<rowsFilt[i].dp->size(); j++){
+      if(rowsFilt[i][j].ID==colID) break;
+    }
+    if(j==rowsFilt[i].dp->size()) continue;
     switch(f.filter){
     case 0:
       if(f.type==0){
-        if(rowsFilt[i][colID].iVal>f.iLow) r.push_back(rowsFilt[i]);
+        if(rowsFilt[i][j].iVal>f.iLow) r.push_back(rowsFilt[i]);
       } else {
-        if(rowsFilt[i][colID].dVal>f.dLow) r.push_back(rowsFilt[i]);
+        if(rowsFilt[i][j].dVal>f.dLow) r.push_back(rowsFilt[i]);
       }
       break;
     case 1:
       if(f.type==0){
-        if(rowsFilt[i][colID].iVal<f.iLow) r.push_back(rowsFilt[i]);
+        if(rowsFilt[i][j].iVal<f.iLow) r.push_back(rowsFilt[i]);
       } else {
-        if(rowsFilt[i][colID].dVal<f.dLow) r.push_back(rowsFilt[i]);
+        if(rowsFilt[i][j].dVal<f.dLow) r.push_back(rowsFilt[i]);
       }
       break;
     case 2:
       if(f.type==0){
-        if(rowsFilt[i][colID].iVal>=f.iLow && rowsFilt[i][colID].iVal<=f.iHigh) r.push_back(rowsFilt[i]);
+        if(rowsFilt[i][j].iVal>=f.iLow && rowsFilt[i][j].iVal<=f.iHigh) r.push_back(rowsFilt[i]);
       } else {
-        if(rowsFilt[i][colID].dVal>=f.dLow && rowsFilt[i][colID].dVal<=f.dHigh) r.push_back(rowsFilt[i]);
+        if(rowsFilt[i][j].dVal>=f.dLow && rowsFilt[i][j].dVal<=f.dHigh) r.push_back(rowsFilt[i]);
       }
       break;
     case 3:
-      if(rowsFilt[i][colID].sVal.find(f.sLow)!=string::npos) r.push_back(rowsFilt[i]);
+      if(rowsFilt[i][j].sVal.find(f.sLow)!=string::npos) r.push_back(rowsFilt[i]);
       break;
     case 4:
-      if(rowsFilt[i][colID].sVal.compare(f.sLow)==0) r.push_back(rowsFilt[i]);
+      if(rowsFilt[i][j].sVal.compare(f.sLow)==0) r.push_back(rowsFilt[i]);
       break;
     default:
       break;
@@ -145,6 +149,7 @@ void CTable::clear(){
 
 void CTable::clearFilter(){
   rowsFilt=rows;
+  fixLayout();
 }
 
 kvTableColumn& CTable::col(size_t index){

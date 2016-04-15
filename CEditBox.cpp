@@ -162,6 +162,30 @@ void CEditBox::render(){
 
 }
 
+void CEditBox::setCaption(const char* str){
+  content=str;
+  cursor=(int)content.size();
+}
+
+void CEditBox::setCaption(int i){
+  char str[256];
+  sprintf(str, "%d", i);
+  content=str;
+  cursor=(int)content.size();
+}
+
+void CEditBox::setCaption(double d){
+  char str[256];
+  sprintf(str, "%g", d);
+  content=str;
+  cursor=(int)content.size();
+}
+
+void CEditBox::setCaption(string s){
+  content=s;
+  cursor=(int)content.size();
+}
+
 void CEditBox::setDisplay(CDisplay* d){
   display=d;
 }

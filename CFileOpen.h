@@ -1,6 +1,7 @@
 #ifndef _CFILEOPEN_H
 #define _CFILEOPEN_H
 
+#include "CAbout.h"
 #include "CActiveFocus.h"
 #include "CButton.h"
 #include "CDisplay.h"
@@ -51,11 +52,13 @@ private:
   CDisplay*     display;
   CFont*        font;
 
+  CAbout aboutDlg;
   CList listDir;
   CList listFile;
   CTextBox tbPath;
 
   int mode;
+  bool bFirst;
 
   CButton butOpen;
   CButton butRecent;

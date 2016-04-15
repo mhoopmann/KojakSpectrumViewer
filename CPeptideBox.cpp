@@ -15,40 +15,7 @@ CPeptideBox::CPeptideBox(){
   clear=false;
   mass=0;
 
-  cbPepA.posX=4;
-  cbPepA.posY=20;
-  cbPepA.sz=12;
-  cbPepA.caption="PEPTIDEAR";
-  cbPepA.checked=true;
-
-  cbPepB.posX=4;
-  cbPepB.posY=40;
-  cbPepB.sz=12;
-  cbPepB.caption="SOMEOTHERPEPK";
-
-  for(int i=0;i<3;i++){
-    for(int j=0;j<6;j++){
-      cbIons[i][j].posX=j*16+16;
-      cbIons[i][j].posY=i*16+69;
-      cbIons[i][j].sz=12;
-    }
-  }
-  cbIons[0][1].checked=true;
-  cbIons[0][4].checked=true;
-
-  fragPepA.posX=4;
-  fragPepA.posY=113;
-
-  fragPepB.posX=4;
-  fragPepB.posY=113;
-
-  showScrollbarV=false;
-  scrollLockV=false;
-  scrollOffsetV=0;
-
-  showScrollbarH=false;
-  scrollLockH=false;
-  scrollOffsetH=0;
+  metaTol="Tolerance: 0.01 Da";
 
 }
 
@@ -117,6 +84,43 @@ CFragmentLists* CPeptideBox::getIonSeries(bool pepB){
     return &fragPepB;
   }
   return &fragPepA;
+}
+
+void CPeptideBox::init(){
+  cbPepA.posX=4;
+  cbPepA.posY=20;
+  cbPepA.sz=12;
+  cbPepA.caption="";
+  cbPepA.checked=true;
+
+  cbPepB.posX=4;
+  cbPepB.posY=40;
+  cbPepB.sz=12;
+  cbPepB.caption="";
+
+  for(int i=0; i<3; i++){
+    for(int j=0; j<6; j++){
+      cbIons[i][j].posX=j*16+16;
+      cbIons[i][j].posY=i*16+69;
+      cbIons[i][j].sz=12;
+    }
+  }
+  cbIons[0][1].checked=true;
+  cbIons[0][4].checked=true;
+
+  fragPepA.posX=4;
+  fragPepA.posY=113;
+
+  fragPepB.posX=4;
+  fragPepB.posY=113;
+
+  showScrollbarV=false;
+  scrollLockV=false;
+  scrollOffsetV=0;
+
+  showScrollbarH=false;
+  scrollLockH=false;
+  scrollOffsetH=0;
 }
 
 int CPeptideBox::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
@@ -279,6 +283,12 @@ void CPeptideBox::render(int x, int y){
       cbIons[i][j].render();
     }
   }
+
+  SDL_SetRenderDrawColor(display->renderer, 32, 32, 32, 255);
+  SDL_RenderDrawLine(display->renderer, 115,55,115,114);
+
+  font->fontSize=12;
+  font->render(125, 58, metaTol, 1);
 
   //New viewport for scrollable content
   //also excludes area that scroll bars will occupy
