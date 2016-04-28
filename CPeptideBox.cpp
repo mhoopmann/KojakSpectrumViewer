@@ -1,3 +1,19 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #include "CPeptideBox.h"
 
 CPeptideBox::CPeptideBox(){
@@ -254,7 +270,7 @@ void CPeptideBox::render(int x, int y){
   //Render the scan information
   sprintf(str,"Scan: %d,  Mass: %.4lf Da,  Charge: %d+", scanNumber,mass, charge);
   font->fontSize=12;
-  font->render(4,4,str,1);
+  font->render(4, 4, str, txtColor);
 
   //Render peptide checkboxes
   cbPepA.render();
@@ -269,15 +285,15 @@ void CPeptideBox::render(int x, int y){
   }
 
   font->fontSize=10;
-  font->render(4,69,"1+",1);
-  font->render(4,85,"2+",1);
-  font->render(4,101,"3+",1);
-  font->render(20,55,"a",1);
-  font->render(36,55,"b",1);
-  font->render(52,55,"c",1);
-  font->render(68,55,"x",1);
-  font->render(84,55,"y",1);
-  font->render(100,55,"z",1);
+  font->render(4,69,"1+",txtColor);
+  font->render(4, 85, "2+", txtColor);
+  font->render(4, 101, "3+", txtColor);
+  font->render(20, 55, "a", txtColor);
+  font->render(36, 55, "b", txtColor);
+  font->render(52, 55, "c", txtColor);
+  font->render(68, 55, "x", txtColor);
+  font->render(84, 55, "y", txtColor);
+  font->render(100, 55, "z", txtColor);
   for(int i=0;i<3;i++){
     for(int j=0;j<6;j++){
       cbIons[i][j].render();
@@ -288,7 +304,7 @@ void CPeptideBox::render(int x, int y){
   SDL_RenderDrawLine(display->renderer, 115,55,115,114);
 
   font->fontSize=12;
-  font->render(125, 58, metaTol, 1);
+  font->render(125, 58, metaTol, txtColor);
 
   //New viewport for scrollable content
   //also excludes area that scroll bars will occupy
@@ -356,6 +372,7 @@ void CPeptideBox::setDisplay(CDisplay* d){
   cbPepB.setDisplay(d);
   fragPepA.setDisplay(d);
   fragPepB.setDisplay(d);
+  txtColor=d->pal.txtIonTable[2];
 }
 
 void CPeptideBox::setFocus(CActiveFocus* f){

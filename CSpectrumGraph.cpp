@@ -1,3 +1,19 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #include "CSpectrumGraph.h"
 
 CSpectrumGraph::CSpectrumGraph(){
@@ -175,7 +191,7 @@ bool CSpectrumGraph::render(CPeptideBox& p){
           else if(j==1) st+="++";
           else if(j==2) st+="+++";
           if(p.getIonSeries(true)!=NULL) st+=", alpha";
-          font->render(x-5,y-(int)(spectrum[m].y*ppuY)-5,st,1,true);
+          font->render(x-5,y-(int)(spectrum[m].y*ppuY)-5,st,txtColor,true);
         }
       }
     }
@@ -215,7 +231,7 @@ bool CSpectrumGraph::render(CPeptideBox& p){
           else if(j==1) st+="++";
           else if(j==2) st+="+++";
           st+=", beta";
-          font->render(x-5,y-(int)(spectrum[m].y*ppuY)-5,st,1,true);
+          font->render(x-5,y-(int)(spectrum[m].y*ppuY)-5,st,txtColor,true);
         }
       }
     }
@@ -227,14 +243,14 @@ bool CSpectrumGraph::render(CPeptideBox& p){
     SDL_RenderDrawLine(display->renderer,posX+10,posY+szY-15,posX+szX-10,posY+szY-15);
     font->fontSize=10;
     sprintf(str,"%.2lf",lowX);
-    font->render(10,posY+szY-12,str,1);
+    font->render(10,posY+szY-12,str,txtColor);
     SDL_RenderDrawLine(display->renderer,posX+10,posY+szY-15,posX+10,posY+szY-13);
     sprintf(str,"%.2lf",highX);
-    font->render(posX+szX-font->getStringWidth(str)-10,posY+szY-12,str,1);
+    font->render(posX+szX-font->getStringWidth(str)-10, posY+szY-12, str, txtColor);
     SDL_RenderDrawLine(display->renderer,posX+szX-10,posY+szY-15,posX+szX-10,posY+szY-13);
     for(i=szX/5+posX+10;i<szX+posX-20;i+=szX/5){
       sprintf(str,"%.2lf",(double)i/ppuX+lowX);
-      font->render((int)i+10-font->getStringWidth(str)/2,posY+szY-12,str,1);
+      font->render((int)i+10-font->getStringWidth(str)/2,posY+szY-12,str,txtColor);
       SDL_RenderDrawLine(display->renderer,(int)i+10,posY+szY-15,(int)i+10,posY+szY-13);
     }
   }
@@ -245,7 +261,7 @@ bool CSpectrumGraph::render(CPeptideBox& p){
     SDL_RenderDrawLine(display->renderer,posX+10,posY+szY-15,posX+10,posY+50);
     SDL_RenderDrawLine(display->renderer,posX+8,posY+50,posX+10,posY+50);
     sprintf(str,"%.1e",highY);
-    font->render(2,posY+38,str,1);
+    font->render(2,posY+38,str,txtColor);
   }
 
   //Draw zoom window
@@ -282,6 +298,7 @@ void CSpectrumGraph::setDisplay(CDisplay *d){
     color[i]=display->pal.spectrum[i];
     for(j=0;j<6;j++) colorIons[i][j]=display->pal.spectrumIons[i][j];
   }
+  txtColor=display->pal.txtSpectrum;
 }
 
 void CSpectrumGraph::setFont(CFont* f){

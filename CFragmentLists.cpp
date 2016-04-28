@@ -1,3 +1,19 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #include "CFragmentLists.h"
 
 CFragmentLists::CFragmentLists(){
@@ -387,7 +403,7 @@ bool CFragmentLists::render(){
             break;
         }
         i=font->getStringWidth(str2);
-        font->render(posX+n+28-i/2,posY+8,str2,0);
+        font->render(posX+n+28-i/2, posY+8, str2, colorTxt[0]);
         n+=56;
       }
     }
@@ -398,7 +414,7 @@ bool CFragmentLists::render(){
       r.h=16;
       SDL_SetRenderDrawColor(display->renderer,colorTable[0].r,colorTable[0].g,colorTable[0].b,255);
       SDL_RenderFillRect(display->renderer,&r);
-      font->render(posX+n+5,posY+9,"#",0);
+      font->render(posX+n+5, posY+9, "#", colorTxt[0]);
       n+=18;
       
       r.x=posX+n+1; 
@@ -409,7 +425,7 @@ bool CFragmentLists::render(){
       r.x=posX+n+1; 
       SDL_SetRenderDrawColor(display->renderer,colorTable[0].r,colorTable[0].g,colorTable[0].b,255);
       SDL_RenderFillRect(display->renderer,&r);
-      font->render(posX+n+5,posY+9,"#",0);
+      font->render(posX+n+5, posY+9, "#", colorTxt[0]);
       n+=18;
     }
   }
@@ -472,7 +488,7 @@ bool CFragmentLists::render(){
           }
           SDL_RenderFillRect(display->renderer,&r);
           q=font->getStringWidth(str);
-          font->render(posX+n+28-q/2,posY+i*14+25,str,1);
+          font->render(posX+n+28-q/2, posY+i*14+25, str, colorTxt[2]);
           n+=56;
         }
       }
@@ -485,7 +501,7 @@ bool CFragmentLists::render(){
         SDL_RenderFillRect(display->renderer,&r);
         sprintf(str,"%d",i+1);
         q=font->getStringWidth(str);
-        font->render(posX+n+8-q/2,posY+i*14+25,str,1);
+        font->render(posX+n+8-q/2, posY+i*14+25, str, colorTxt[1]);
         n+=18;
 
         r.x=posX+n+1; 
@@ -493,7 +509,7 @@ bool CFragmentLists::render(){
         SDL_RenderFillRect(display->renderer,&r);
         sprintf(str,"%c",peptide[i]);
         q=font->getStringWidth(str);
-        font->render(posX+n+8-q/2,posY+i*14+25,str,0);
+        font->render(posX+n+8-q/2, posY+i*14+25, str, colorTxt[0]);
         n+=18;
 
         r.x=posX+n+1; 
@@ -501,7 +517,7 @@ bool CFragmentLists::render(){
         SDL_RenderFillRect(display->renderer,&r);
         sprintf(str,"%d",ionCount-i+1);
         q=font->getStringWidth(str);
-        font->render(posX+n+8-q/2,posY+i*14+25,str,1);
+        font->render(posX+n+8-q/2,posY+i*14+25,str,colorTxt[1]);
         n+=18;
       }
     }
@@ -516,6 +532,7 @@ void CFragmentLists::setDisplay(CDisplay* d){
   size_t i,j;
   for(i=0;i<3;i++) {
     colorTable[i]=display->pal.ionTable[i];
+    colorTxt[i]=display->pal.txtIonTable[i];
     for(j=0;j<6;j++) colorIons[i][j]=display->pal.spectrumIons[i][j];
   }
 }

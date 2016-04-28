@@ -1,3 +1,19 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #include "CEditBox.h"
 
 CEditBox::CEditBox(){
@@ -137,13 +153,13 @@ void CEditBox::render(){
   r.h=szY;
   r.x=posX;
   r.y=posY;
-  if(this==activeFocus->focus) SDL_SetRenderDrawColor(display->renderer,0,0,64,255);
-  else SDL_SetRenderDrawColor(display->renderer,64,64,64,255);
+  if(this==activeFocus->focus) SDL_SetRenderDrawColor(display->renderer,colors[1].r,colors[1].g,colors[1].b,255);
+  else SDL_SetRenderDrawColor(display->renderer, colors[0].r, colors[0].g, colors[0].b, 255);
   SDL_RenderFillRect(display->renderer,&r);
 
   //Draw Text
   font->fontSize = fontSize;
-  font->render(posX+4,posY+3,content);
+  font->render(posX+4,posY+3,content,txtColor);
 
   //Draw Cursor
   if(this==activeFocus->focus){
@@ -188,6 +204,9 @@ void CEditBox::setCaption(string s){
 
 void CEditBox::setDisplay(CDisplay* d){
   display=d;
+  colors[0]=d->pal.textBox[0];
+  colors[1]=d->pal.textBox[1];
+  txtColor=d->pal.txtTextBox;
 }
 
 void CEditBox::setFocus(CActiveFocus* f){

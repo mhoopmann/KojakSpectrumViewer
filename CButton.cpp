@@ -1,3 +1,19 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #include "CButton.h"
 
 CButton::CButton(){
@@ -86,7 +102,7 @@ void CButton::render(){
   } else {
     r.x=posX+(szX-textWidth)/2;
     r.y=posY+(szY-textHeight)/2;
-    font->render(r.x,r.y,caption);
+    font->render(r.x,r.y,caption,txtColors[0]);
   }
 
   font->fontSize = fontSize;
@@ -109,6 +125,8 @@ void CButton::setCaption(string str){
 void CButton::setDisplay(CDisplay* d){
   display=d;
   for(size_t i=0;i<5;i++) colors[i]=display->pal.buttons[i];
+  txtColors[0]=display->pal.txtButton[0];
+  txtColors[1]=display->pal.txtButton[1];
 }
 
 void CButton::setFocus(CActiveFocus* f){

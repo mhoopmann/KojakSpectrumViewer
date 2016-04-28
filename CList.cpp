@@ -1,3 +1,19 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #include "CList.h"
 
 CList::CList(){
@@ -132,6 +148,16 @@ int CList::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
     return 2;
   } 
 
+  //Check for highlight
+  if(mouseX>=posX && mouseX<=(posX+szX) && mouseY>=posY && mouseY<=posY+szY){
+    int i=mouseY-posY+(int)(scrollOffsetV*scrollJumpV);
+    i/=szHeight;
+    highlight=-1;
+    if(i<(int)items->size()) highlight = i;
+  } else {
+    highlight=-1;
+  }
+
   scrollLockV=false;
 
   return 0;
@@ -160,7 +186,7 @@ void CList::render(){
   r.w=szX;
   r.x=0;
   r.y=0;
-  SDL_SetRenderDrawColor(display->renderer,0,0,0,128);
+  SDL_SetRenderDrawColor(display->renderer,colors[0].r,colors[0].g,colors[0].b,255);
   SDL_RenderFillRect(display->renderer,&r);
 
   //Draw list items
@@ -171,8 +197,12 @@ void CList::render(){
   for(i=offset;i<items->size();i++){
     r.y=(int)i*szHeight-(int)(scrollOffsetV*scrollJumpV);
     if(i==selected){
-      SDL_SetRenderDrawColor(display->renderer,32,128,128,255);
+      SDL_SetRenderDrawColor(display->renderer,colors[2].r,colors[2].g,colors[2].b,255);
       SDL_RenderFillRect(display->renderer,&r);
+    }
+    if(highlight==(int)i){
+      SDL_SetRenderDrawColor(display->renderer, colors[1].r, colors[1].g, colors[1].b, 255);
+      SDL_RenderFillRect(display->renderer, &r);
     }
     if(items->at(i).icon>-1){
       switch(szFont){
@@ -184,9 +214,9 @@ void CList::render(){
       default: w=0; h=0; break;
       }
       icons->render(display->renderer,items->at(i).icon,r.x+2,r.y+1,w,h);
-      font->render(r.x+w+4,r.y+1,items->at(i).item);
+      font->render(r.x+w+4,r.y+1,items->at(i).item,txtColor);
     } else {
-      font->render(r.x+2,r.y+1,items->at(i).item);
+      font->render(r.x+2, r.y+1, items->at(i).item, txtColor);
     }
   }
 
@@ -214,6 +244,10 @@ void CList::render(){
 
 void CList::setDisplay(CDisplay* d){
   display=d;
+  colors[0]=display->pal.list[0];
+  colors[1]=display->pal.list[1];
+  colors[2]=display->pal.list[2];
+  txtColor=display->pal.txtList;
 }
 
 void CList::setFont(CFont* f){

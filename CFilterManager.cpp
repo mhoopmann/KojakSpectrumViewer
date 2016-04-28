@@ -1,3 +1,19 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #include "CFilterManager.h"
 
 CFilterManager::CFilterManager(){
@@ -138,6 +154,10 @@ int CFilterManager::logic(int mouseX, int mouseY, int mouseButton, bool mouseBut
     else f.filter=(char)filter.selected + 3;
     valueA.getCaption(&f.iLow, &f.dLow, &f.sLow);
     valueB.getCaption(&f.iHigh, &f.dHigh, &f.sHigh);
+    if(f.filter==2 && f.dLow>f.dHigh){
+      valueB.getCaption(&f.iLow, &f.dLow, &f.sLow);
+      valueA.getCaption(&f.iHigh, &f.dHigh, &f.sHigh);
+    }
     vChosen.push_back(f);
     CButton b;
     vButDel.push_back(b);
@@ -202,8 +222,8 @@ void CFilterManager::render(){
 
   //Display the text
   font->fontSize=20;
-  font->render(0, 0, "Filter PSMs:", 1);
-  font->render(0, 80, "Applied Filters:", 1);
+  font->render(0, 0, "Filter PSMs:");
+  font->render(0, 80, "Applied Filters:");
 
   //Display all filter items
   font->fontSize=18;
@@ -224,7 +244,7 @@ void CFilterManager::render(){
         else sprintf(str, "%s: is exactly %s", &vChosen[i].colID[0], &vChosen[i].sLow[0]);
       }
     }
-    font->render(30,110+(int)i*25, str, 1);
+    font->render(30,110+(int)i*25, str);
   }
 
   r.x=0;

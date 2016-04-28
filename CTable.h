@@ -1,3 +1,19 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #ifndef _CTABLE_H
 #define _CTABLE_H
 
@@ -107,11 +123,15 @@ private:
   vector<kvTableRow>  rows; 
   vector<kvTableRow>  rowsFilt;
 
+  kvColor colors[4];
+  int     txtColors[2];
+
   int     lastMouseY;
   double  scrollJumpV;
   bool    scrollLockV;
   int     scrollOffsetV;
   bool    showScrollbarV;
+  int     stepV;
   int     thumbHeightV;
   int     thumbMaxV;
 
@@ -120,6 +140,7 @@ private:
   bool    scrollLockH;
   int     scrollOffsetH;
   bool    showScrollbarH;
+  int     stepH;
   int     thumbHeightH;
   int     thumbMaxH;
 

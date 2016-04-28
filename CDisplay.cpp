@@ -1,11 +1,30 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #include "CDisplay.h"
 
 CDisplay::CDisplay(){
   screenHeight=600;
   screenWidth=800;
   renderer=NULL;
-  //screenSurface = NULL;
   window = NULL;
+  cursors[0]=NULL;
+  cursors[1]=NULL;
+  cursors[2]=NULL;
+  cursors[3]=NULL;
 
   defaultColors();
   readPalette();
@@ -15,10 +34,18 @@ CDisplay::CDisplay(){
 CDisplay::~CDisplay(){
   if(renderer!=NULL) SDL_DestroyRenderer(renderer);
   renderer=NULL;
-  //if(screenSurface != NULL) SDL_FreeSurface(screenSurface);
-	//screenSurface = NULL;
   if(window != NULL) SDL_DestroyWindow(window);
   window = NULL;
+
+  if(cursors[0]!=NULL) SDL_FreeCursor(cursors[0]);
+  if(cursors[1]!=NULL) SDL_FreeCursor(cursors[1]);
+  if(cursors[2]!=NULL) SDL_FreeCursor(cursors[2]);
+  if(cursors[3]!=NULL) SDL_FreeCursor(cursors[3]);
+  cursors[0]=NULL;
+  cursors[1]=NULL;
+  cursors[2]=NULL;
+  cursors[3]=NULL;
+
   SDL_Quit();
 }
 
@@ -32,6 +59,9 @@ void CDisplay::defaultColors(){
   pal.ionTable[0]=extractColors("85,98,112");
   pal.ionTable[1]=extractColors("212,215,219");
   pal.ionTable[2]=extractColors("238,238,240");
+  pal.list[0]=extractColors("85,98,112");
+  pal.list[1]=extractColors("255,156,0");
+  pal.list[2]=extractColors("255,156,0");
   pal.toolbar[0]=extractColors("85,98,112");
   pal.toolbar[1]=extractColors("68,74,80");
   pal.spectrum[0]=extractColors("255,255,255");
@@ -55,6 +85,24 @@ void CDisplay::defaultColors(){
   pal.spectrumIons[0][5]=extractColors("166,35,35");
   pal.spectrumIons[1][5]=extractColors("166,35,35");
   pal.spectrumIons[2][5]=extractColors("166,35,35");
+  pal.table[0]=extractColors("255,255,255");
+  pal.table[1]=extractColors("235,235,235");
+  pal.table[2]=extractColors("85,98,112");
+  pal.table[3]=extractColors("120,215,208");
+  pal.textBox[0]=extractColors("85,98,112");
+  pal.textBox[1]=extractColors("25,133,125");
+  pal.txtDefault=extractColorsText("44,62,80");
+  pal.txtButton[0]=extractColorsText("255,255,255");
+  pal.txtButton[1]=extractColorsText("128,128,128");
+  pal.txtCheckbox=extractColorsText("44,62,80");
+  pal.txtIonTable[0]=extractColorsText("255,255,255");
+  pal.txtIonTable[1]=extractColorsText("44,62,80");
+  pal.txtIonTable[2]=extractColorsText("44,62,80");
+  pal.txtList=extractColorsText("255,255,255");
+  pal.txtSpectrum=extractColorsText("44,62,80");
+  pal.txtTable[0]=extractColorsText("255,255,255");
+  pal.txtTable[1]=extractColorsText("44,62,80");
+  pal.txtTextBox=extractColorsText("255,255,255");
 }
 
 bool CDisplay::getWindowSize(int& w, int& h){
@@ -100,6 +148,11 @@ bool CDisplay::init() {
     }
   }
 
+  if(cursors[0]==NULL) cursors[0]=SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+  if(cursors[1]==NULL) cursors[1]=SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_WAIT);
+  if(cursors[2]==NULL) cursors[2]=SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEWE);
+  if(cursors[3]==NULL) cursors[3]=SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZENS);
+
   return success;
 }
 
@@ -120,6 +173,33 @@ kvColor CDisplay::extractColors(string& s){
   col.b=atoi(tok);
 
   return col;
+}
+
+int CDisplay::extractColorsText(const char* s){
+  string str=s;
+  return extractColorsText(str);
+}
+
+int CDisplay::extractColorsText(string& s){
+  char* tok;
+  size_t i;
+  kvColor col;
+
+  tok=strtok(&s[0], ",");
+  col.r=atoi(tok);
+  tok=strtok(NULL, ",");
+  col.g=atoi(tok);
+  tok=strtok(NULL, ",");
+  col.b=atoi(tok);
+
+  for(i=0; i<txtColors.size(); i++){
+    if(txtColors[i].r==col.r && txtColors[i].g==col.g && txtColors[i].b==col.b) break;
+  }
+  if(i==txtColors.size()){
+    txtColors.push_back(col);
+  }
+
+  return (int)i;
 }
 
 void CDisplay::readPalette(){
@@ -146,6 +226,9 @@ void CDisplay::readPalette(){
     else if(object.compare("ions.header")==0) pal.ionTable[0]=extractColors(rgb);
     else if(object.compare("ions.subheader")==0) pal.ionTable[1]=extractColors(rgb);
     else if(object.compare("ions.cell")==0) pal.ionTable[2]=extractColors(rgb);
+    else if(object.compare("list.color")==0) pal.list[0]=extractColors(rgb);
+    else if(object.compare("list.highlight")==0) pal.list[1]=extractColors(rgb);
+    else if(object.compare("list.selected")==0) pal.list[2]=extractColors(rgb);
     else if(object.compare("toolbar.color")==0) pal.toolbar[0]=extractColors(rgb);
     else if(object.compare("toolbar.separator")==0) pal.toolbar[1]=extractColors(rgb);
     else if(object.compare("spectrum.background")==0) pal.spectrum[0]=extractColors(rgb);

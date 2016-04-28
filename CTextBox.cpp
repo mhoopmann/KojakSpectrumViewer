@@ -1,3 +1,19 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #include "CTextBox.h"
 
 CTextBox::CTextBox(){
@@ -197,7 +213,7 @@ void CTextBox::render(){
   r=vp;
   r.x=0;
   r.y=0;
-  SDL_SetRenderDrawColor(display->renderer,247,247,247,255);
+  SDL_SetRenderDrawColor(display->renderer,colors[0].r,colors[0].g,colors[0].b,255);
   SDL_RenderFillRect(display->renderer,&r);
 
   //New viewport for scrollable content
@@ -208,14 +224,26 @@ void CTextBox::render(){
     SDL_RenderSetViewport(display->renderer,&vp);
   }
 
-  //set the scrollbar offsets
-  font->fontSize=szFont;
-  x=2-(int)(scrollOffsetH*scrollJumpH);
-  y=2-(int)(scrollOffsetV*scrollJumpV);
-  for(i=0;i<buffer.size();i++){
-    if(y>-12) font->render(x,y,&buffer[i].text[0],1);
-    y+=szHeight;
-    if(y>szY) break;
+  if(!noScroll){
+    //set the scrollbar offsets
+    font->fontSize=szFont;
+    x=2-(int)(scrollOffsetH*scrollJumpH);
+    y=2-(int)(scrollOffsetV*scrollJumpV);
+    for(i=0;i<buffer.size();i++){
+      if(y>-12) font->render(x,y,&buffer[i].text[0],txtColor);
+      y+=szHeight;
+      if(y>szY) break;
+    }
+  } else {
+    //vertically center what can be seen
+    i=(szY-2)/szHeight;
+    x=2;
+    y=(szY-(int)i*szHeight)/2;
+    for(i=0; i<buffer.size(); i++){
+      font->render(x, y, &buffer[i].text[0], txtColor);
+      y+=szHeight;
+      if(y>szY) break;
+    }
   }
 
   //expand viewport for scrollbars
@@ -254,6 +282,9 @@ void CTextBox::render(){
 
 void CTextBox::setDisplay(CDisplay* d){
   display = d;
+  colors[0]=d->pal.textBox[0];
+  colors[1]=d->pal.textBox[1];
+  txtColor=d->pal.txtTextBox;
 }
 
 void CTextBox::setFocus(CActiveFocus* f){

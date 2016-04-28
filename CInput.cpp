@@ -1,3 +1,19 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #include "CInput.h"
 
 CInput::CInput(){
@@ -98,16 +114,26 @@ void CInput::setKey(SDL_Keycode k, bool b){
   switch (k){
   case SDLK_BACKSPACE: keyState[KEY_BACKSPACE] = b; break;
   case SDLK_RETURN: keyState[KEY_ENTER] = b; break;
-  case SDLK_0:      keyState[KEY_0] = b; break;
-  case SDLK_1:      keyState[KEY_1] = b; break;
-  case SDLK_2:      keyState[KEY_2] = b; break;
-  case SDLK_3:      keyState[KEY_3] = b; break;
-  case SDLK_4:      keyState[KEY_4] = b; break;
-  case SDLK_5:      keyState[KEY_5] = b; break;
-  case SDLK_6:      keyState[KEY_6] = b; break;
-  case SDLK_7:      keyState[KEY_7] = b; break;
-  case SDLK_8:      keyState[KEY_8] = b; break;
-  case SDLK_9:      keyState[KEY_9] = b; break;
+  case SDLK_0:
+  case SDLK_KP_0:   keyState[KEY_0] = b; break;
+  case SDLK_1:
+  case SDLK_KP_1:   keyState[KEY_1] = b; break;
+  case SDLK_2:
+  case SDLK_KP_2:   keyState[KEY_2] = b; break;
+  case SDLK_3:
+  case SDLK_KP_3:   keyState[KEY_3] = b; break;
+  case SDLK_4:
+  case SDLK_KP_4:   keyState[KEY_4] = b; break;
+  case SDLK_5:
+  case SDLK_KP_5:   keyState[KEY_5] = b; break;
+  case SDLK_6:
+  case SDLK_KP_6:   keyState[KEY_6] = b; break;
+  case SDLK_7:
+  case SDLK_KP_7:   keyState[KEY_7] = b; break;
+  case SDLK_8:
+  case SDLK_KP_8:   keyState[KEY_8] = b; break;
+  case SDLK_9:
+  case SDLK_KP_9:   keyState[KEY_9] = b; break;
   case SDLK_q:      keyState[KEY_Q] = b; break;
   case SDLK_DELETE: keyState[KEY_DELETE] = b; break;
   case SDLK_UP:     keyState[KEY_UP] = b; break;
@@ -143,6 +169,10 @@ void CInput::setKey(SDL_Keycode k, bool b){
   if (b && k<128) {
     if (keyShift && k > 96 && k < 123) add((char)(k - 32));
     else add((char)k);
+  }
+  if(b && k>=SDLK_KP_1 && k<=SDLK_KP_0){
+    if(k==SDLK_KP_0) add(48);
+    else add((char)k-SDLK_KP_1+49);
   }
 
 }

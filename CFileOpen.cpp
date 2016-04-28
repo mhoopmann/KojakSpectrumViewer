@@ -1,3 +1,19 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #include "CFileOpen.h"
 
 CFileOpen::CFileOpen(){
@@ -65,7 +81,7 @@ void CFileOpen::buildFileList(char* path){
 void CFileOpen::fixLayout(){
   int h,w;
   display->getWindowSize(w,h);
-  tbPath.szX=w-167;
+  tbPath.szX=w-175;
   butDirUp.posX=w-40;
   butLoad.posX=w-74;
   butLoad.posY=h-42;
@@ -111,8 +127,8 @@ void CFileOpen::init(){
 
   tbPath.posX=130;
   tbPath.posY=20;
-  tbPath.szX=596;
-  tbPath.szY=20;
+  tbPath.szX=580;
+  tbPath.szY=26;
   tbPath.noScroll=true;
   tbPath.setSize(14);
   tbPath.addText(cwd);
@@ -124,7 +140,7 @@ void CFileOpen::init(){
   butDirUp.setImage(4);
 
   listDir.posX=130;
-  listDir.posY=60;
+  listDir.posY=70;
   listDir.szX=50;
   listDir.szY=450;
   listDir.setSize(14);
@@ -146,7 +162,7 @@ void CFileOpen::init(){
 #endif
 
   listFile.posX=190;
-  listFile.posY=60;
+  listFile.posY=70;
   listFile.szX=250;
   listFile.szY=450;
   listFile.setSize(14);
@@ -270,9 +286,9 @@ void CFileOpen::render(){
   
   if(mode==1){
     font->fontSize=14;
-    font->render(130,5,"Path:",1);
-    font->render(130,45,"Drive:",1);
-    font->render(190,45,"Files:",1);
+    font->render(130,5,"Path:");
+    font->render(130,55,"Drive:");
+    font->render(190,55,"Files:");
     tbPath.render();
     listDir.render();
     listFile.render();

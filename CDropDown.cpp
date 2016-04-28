@@ -1,3 +1,19 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #include "CDropDown.h"
 
 CDropDown::CDropDown(){
@@ -174,7 +190,7 @@ void CDropDown::render(){
   button.render();
 
   //Draw text
-  if(selected>-1) font->render(posX+4,posY+2,items[selected],1);
+  if(selected>-1) font->render(posX+4,posY+2,items[selected],txtColor);
   
   //Draw list
   if(dropped){
@@ -210,7 +226,7 @@ void CDropDown::render(){
         SDL_SetRenderDrawColor(display->renderer,colors[1].r,colors[1].g,colors[1].b,255);
         SDL_RenderFillRect(display->renderer,&r2);
       }
-      font->render(r.x,r.y+1,items[i],1);
+      font->render(r.x,r.y+1,items[i],txtColor);
       r.y+=(fontSize+3);
     }
 
@@ -244,6 +260,7 @@ void CDropDown::setDisplay(CDisplay* d){
   button.setDisplay(d);
   colors[0]=display->pal.buttons[0];
   colors[1]=display->pal.buttons[1];
+  txtColor=display->pal.txtCheckbox;
 }
 
 void CDropDown::setFocus(CActiveFocus* f){

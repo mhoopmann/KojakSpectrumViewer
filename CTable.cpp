@@ -1,3 +1,19 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #include "CTable.h"
 
 char  CTable::sortDataType;
@@ -176,6 +192,8 @@ void CTable::fixLayout(){
     scrollThumbSpace = viewSize-thumbHeightV;
     scrollJumpV = (double)scrollTrackSpace/scrollThumbSpace;
     scrollOffsetV = 0;
+    stepV=(int)((viewSize-16)/scrollJumpV);
+    if(stepV<1) stepV=1;
   } else showScrollbarV=false;
 
   //Horizontal Scrolling
@@ -192,6 +210,8 @@ void CTable::fixLayout(){
     scrollThumbSpace = viewSize-thumbHeightH;
     scrollJumpH = (double)scrollTrackSpace/scrollThumbSpace;
     scrollOffsetH = 0;
+    stepH=(int)((viewSize-10)/scrollJumpH);
+    if(stepH<1) stepH=1;
   } else showScrollbarH=false;
  
 }
@@ -243,6 +263,23 @@ int CTable::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
     }
   } 
 
+  //clicked scroll lane (causes jump)
+  if(mouseButton && showScrollbarV){
+    if(mouseX>=szX-8 && mouseX<=szX-2 && (mouseY>=posY+16 && mouseY<=posY+szY-10)){
+      if(mouseY<posY+16+scrollOffsetV){
+        scrollOffsetV-=stepV;
+        if(scrollOffsetV>thumbMaxV) scrollOffsetV=thumbMaxV;
+        if(scrollOffsetV<0) scrollOffsetV=0;
+        return 1;
+      } else if(mouseY>posY+16+scrollOffsetV+thumbHeightV){
+        scrollOffsetV+=stepV;
+        if(scrollOffsetV>thumbMaxV) scrollOffsetV=thumbMaxV;
+        if(scrollOffsetV<0) scrollOffsetV=0;
+        return 1;
+      }
+    }
+  }
+
   if(mouseButton==1 && scrollLockV){
     scrollLockV=false;
     return 1;
@@ -269,6 +306,23 @@ int CTable::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
       return 1;
     }
   } 
+
+  //clicked scroll lane (causes jump)
+  if(mouseButton && showScrollbarH){
+    if(mouseX>=posX && mouseX<=posX+szX-10 && (mouseY>=posY+szY-8 && mouseY<=posY+szY-2)){
+      if(mouseX<posX+scrollOffsetH){
+        scrollOffsetH-=stepH;
+        if(scrollOffsetH>thumbMaxH) scrollOffsetH=thumbMaxH;
+        if(scrollOffsetH<0) scrollOffsetH=0;
+        return 1;
+      } else if(mouseX>posX+scrollOffsetH+thumbHeightH){
+        scrollOffsetH+=stepH;
+        if(scrollOffsetH>thumbMaxH) scrollOffsetH=thumbMaxH;
+        if(scrollOffsetH<0) scrollOffsetH=0;
+        return 1;
+      }
+    }
+  }
 
   if(mouseButton==1 && scrollLockH){
     scrollLockH=false;
@@ -310,7 +364,7 @@ bool CTable::render(){
   r=vp;
   r.x=0;
   r.y=0;
-  SDL_SetRenderDrawColor(display->renderer,235,235,235,255);
+  SDL_SetRenderDrawColor(display->renderer,colors[1].r,colors[1].g,colors[1].b,255);
   SDL_RenderFillRect(display->renderer,&r);
 
   //Display active column headers
@@ -318,7 +372,7 @@ bool CTable::render(){
   r.x=0-(int)(scrollOffsetH*scrollJumpH);
   r.y=0;
   r.h=15;
-  SDL_SetRenderDrawColor(display->renderer,85,98,112,255);
+  SDL_SetRenderDrawColor(display->renderer, colors[2].r, colors[2].g, colors[2].b, 255);
   for(i=0;i<columns.size();i++){
 
     if(r.x>vp.w) break;
@@ -333,7 +387,7 @@ bool CTable::render(){
     SDL_RenderFillRect(display->renderer,&r);
 
     //draw column header
-    font->render(r.x+2,r.y+2,columns[i].header,0);
+    font->render(r.x+2,r.y+2,columns[i].header,txtColors[0]);
     r.x+=columns[i].width+1;
   }
   r.x--;
@@ -348,7 +402,7 @@ bool CTable::render(){
   SDL_RenderSetViewport(display->renderer,&vp);
 
   //Display table contents
-  SDL_SetRenderDrawColor(display->renderer,255,255,255,255);
+  SDL_SetRenderDrawColor(display->renderer, colors[0].r, colors[0].g, colors[0].b, 255);
   for(j=0;j<rowsFilt.size();j++){
 
     r.x=0-(int)(scrollOffsetH*scrollJumpH);
@@ -363,9 +417,9 @@ bool CTable::render(){
       r2=vp;
       r2.y=r.y;
       r2.h=15;
-      SDL_SetRenderDrawColor(display->renderer,120,215,208,205);
+      SDL_SetRenderDrawColor(display->renderer, colors[3].r, colors[3].g, colors[3].b, 205);
       SDL_RenderFillRect(display->renderer,&r2);
-      SDL_SetRenderDrawColor(display->renderer,255,255,255,255);
+      SDL_SetRenderDrawColor(display->renderer, colors[0].r, colors[0].g, colors[0].b, 255);
     }     
 
     for(i=0;i<columns.size();i++){
@@ -394,15 +448,15 @@ bool CTable::render(){
       switch(columns[i].dataType){
       case 0:
         sprintf(str,"%d",rowsFilt[j][k].iVal);
-        font->render(r.x+2,r.y+2,str,1);
+        font->render(r.x+2,r.y+2,str,txtColors[1]);
         break;
       case 1:
         if(rowsFilt[j][k].dVal<0.0001) sprintf(str, "%.4g", rowsFilt[j][k].dVal);
         else sprintf(str, "%.4lf", rowsFilt[j][k].dVal);
-        font->render(r.x+2,r.y+2,str,1);
+        font->render(r.x+2,r.y+2,str,txtColors[1]);
         break;
       default:
-        font->render(r.x+2,r.y+2,rowsFilt[j][k].sVal,1);
+        font->render(r.x+2,r.y+2,rowsFilt[j][k].sVal,txtColors[1]);
         break;
       }
 
@@ -445,6 +499,12 @@ bool CTable::render(){
 
 void CTable::setDisplay(CDisplay* d){
   display = d;
+  colors[0]=d->pal.table[0];
+  colors[1]=d->pal.table[1];
+  colors[2]=d->pal.table[2];
+  colors[3]=d->pal.table[3];
+  txtColors[0]=d->pal.txtTable[0];
+  txtColors[1]=d->pal.txtTable[1];
 }
 
 void CTable::setFocus(CActiveFocus* f){

@@ -1,14 +1,30 @@
+/*
+Copyright 2016, Michael R. Hoopmann, Institute for Systems Biology
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 #include "CFont.h"
 
 CFont::CFont(){
   fontSize=16;
   font=NULL;
-  rend = NULL;
+  display = NULL;
 
   int i, j, k;
 
   for(i=0; i<21; i++){
-    for(j=0; j<2; j++){
+    for(j=0; j<20; j++){
       for(k=0; k<128; k++){
         texture[i][j][k]=NULL;
       }
@@ -19,12 +35,12 @@ CFont::CFont(){
 }
 
 CFont::~CFont(){
-  rend = NULL;
+  display = NULL;
 
   int i, j, k;
 
   for(i=0; i<21; i++){
-    for(j=0; j<2; j++){
+    for(j=0; j<20; j++){
       for(k=0; k<128; k++){
         if(texture[i][j][k]!=NULL){
           SDL_DestroyTexture(texture[i][j][k]);
@@ -61,7 +77,7 @@ int CFont::getStringWidth(string str){
 
 bool CFont::loadFont(char* fname){
   int i,j,k;
-  for(j=0;j<2;j++){
+  for(j=0;j<display->txtColors.size();j++){
     for(i=6; i<21; i++){
       font = TTF_OpenFont(fname, i);
       if(font==NULL) return false;
@@ -92,10 +108,10 @@ void CFont::render(int x, int y, char* str, int color, bool rotate) {
     if(rotate){
       p.x=0;
       p.y=0;
-      SDL_RenderCopyEx(rend, texture[fontSize][color][index], NULL, &r, -90.0, &p, SDL_FLIP_NONE);
+      SDL_RenderCopyEx(display->renderer, texture[fontSize][color][index], NULL, &r, -90.0, &p, SDL_FLIP_NONE);
       posY-=r.w;
     } else {
-      SDL_RenderCopy(rend, texture[fontSize][color][index], NULL, &r);
+      SDL_RenderCopy(display->renderer, texture[fontSize][color][index], NULL, &r);
       posX+=r.w;
     }
   }
@@ -106,30 +122,28 @@ void CFont::render(int x, int y, string s, int color, bool rotate) {
   render(x,y,&s[0],color,rotate);
 }
 
+void CFont::setDisplay(CDisplay* d){
+  display = d;
+}
+
 void CFont::setFontSize(int sz){
   if(sz<6) sz=6;
   if(sz>20) sz=20;
   fontSize=sz;
 }
 
-void CFont::setRenderer(SDL_Renderer* renderer){
-  rend = renderer;
-}
-
 bool CFont::setText(char c, SDL_Texture*& dest, int color){
-  SDL_Color col = {255,255,255};
+  SDL_Color col;
   char str[2];
   str[0]=c;
   str[1]='\0';
   if(dest!=NULL) SDL_DestroyTexture(dest);
-  if(color==1) {
-    col.r=44;
-    col.g=62;
-    col.b=80;
-  }
+  col.r=display->txtColors[color].r;
+  col.g=display->txtColors[color].g;
+  col.b=display->txtColors[color].b;
   SDL_Surface* surf = TTF_RenderText_Blended(font,str,col);
   if(surf==NULL) return false;
-  dest = SDL_CreateTextureFromSurface(rend,surf);
+  dest = SDL_CreateTextureFromSurface(display->renderer,surf);
   if(dest==NULL) return false;
   SDL_FreeSurface(surf);
   return true;
