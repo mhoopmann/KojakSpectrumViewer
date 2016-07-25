@@ -20,6 +20,9 @@ limitations under the License.
 #include "CInput.h"
 #include "CViewer.h"
 
+#define VERSION "Version 0.9 (alpha 5)"
+#define BDATE "July 25, 2016"
+
 int main( int argc, char* args[] ) {
   
   SDL_Event e;
@@ -37,7 +40,7 @@ int main( int argc, char* args[] ) {
   CViewer viewer(&display,&inp);
   appActiveFocus.focus = &viewer;
   viewer.setFocus(&appActiveFocus);
-  viewer.init();
+  viewer.init(VERSION,BDATE);
 
   while(viewer.viewerMain()){
 

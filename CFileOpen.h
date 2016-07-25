@@ -53,7 +53,7 @@ public:
   char fileName[256];
 
   void fixLayout   ();
-  void init        ();
+  void init        (char* ver, char* bdate);
   int  logic       (int mouseX, int mouseY, int mouseButton, bool mouseButton1);
   void render      ();
 

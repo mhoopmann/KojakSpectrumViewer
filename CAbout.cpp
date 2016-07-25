@@ -28,13 +28,15 @@ CAbout::~CAbout(){
   font = NULL;
 }
 
-void CAbout::init(){
+void CAbout::init(char* ver, char* bDate){
 
   butBack.posX=0;
   butBack.posY=00;
   butBack.szX=120;
   butBack.szY=50;
   butBack.setCaption("Back");
+  version=ver;
+  bdate=bDate;
 
 }
 
@@ -68,8 +70,8 @@ void CAbout::render(){
   font->fontSize=20;
   font->render(150, 20, "Kojak Spectrum Viewer");
   font->fontSize=15;
-  font->render(150, 42, "Version 0.9 (alpha 4)");
-  font->render(150, 58, "April 27, 2016");
+  font->render(150, 42, version);
+  font->render(150, 58, bdate);
   font->render(150, 74, "Copyright (C) 2016, Michael Hoopmann, Institute for Systems Biology");
   font->render(150, 90, "For more information, visit: http://kojak-ms.org");
 

@@ -23,6 +23,8 @@ limitations under the License.
 #include "CFragmentLists.h"
 #include "CInput.h"
 #include "CPeptideBox.h"
+#include "savepng.h"
+#include <ctime>
 
 class CSpectrumGraph{
 public:
@@ -35,9 +37,11 @@ public:
   int posY;
   int szX;
   int szY;
+  int lineWidth;
 
   CDataSet spectrum;
 
+  void exportPNG();
   bool logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1);
   bool render(CPeptideBox& p);
   void resetView();

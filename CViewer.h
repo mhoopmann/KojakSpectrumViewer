@@ -44,7 +44,7 @@ public:
   CViewer(CDisplay* d, CInput* inp);
   ~CViewer();
 
-  void init();
+  void init(char* ver, char* bdate);
   void processEvent(SDL_Event& e);
   void setDisplay(CDisplay* d);
   void setFocus(CActiveFocus* f);

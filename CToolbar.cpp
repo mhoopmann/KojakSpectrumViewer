@@ -52,14 +52,19 @@ CToolbar::CToolbar(){
   sfButton.szX=28;
   sfButton.szY=28;
 
-  setButton.posX=138;
+  pngButton.posX = 138;
+  pngButton.posY = 2;
+  pngButton.szX = 28;
+  pngButton.szY = 28;
+
+  setButton.posX=170;
   setButton.posY=2;
   setButton.szX=28;
   setButton.szY=28;
 
-  addSeparator(170, 2);
+  addSeparator(202, 2);
 
-  aboutButton.posX=174;
+  aboutButton.posX=206;
   aboutButton.posY=2;
   aboutButton.szX=28;
   aboutButton.szY=28;
@@ -91,6 +96,7 @@ void CToolbar::init(){
   sfButton.setImage(3);
   aboutButton.setImage(5);
   setButton.setImage(6);
+  pngButton.setImage(7);
 }
 
 int CToolbar::logic(int mouseX, int mouseY, int mouseButton){
@@ -99,6 +105,7 @@ int CToolbar::logic(int mouseX, int mouseY, int mouseButton){
   if(nextButton.logic(mouseX,mouseY,mouseButton)) return 3;
   if(aboutButton.logic(mouseX,mouseY,mouseButton)) return 4;
   if(sfButton.logic(mouseX,mouseY,mouseButton)) return 5;
+  if(pngButton.logic(mouseX,mouseY,mouseButton)) return 8;
   if(setButton.logic(mouseX, mouseY, mouseButton)) return 7;
   
   int x,y;
@@ -152,6 +159,7 @@ void CToolbar::render(){
   sfButton.render();
   aboutButton.render();
   setButton.render();
+  pngButton.render();
 
 }
 
@@ -165,6 +173,7 @@ void CToolbar::setDisplay(CDisplay* d){
   sfButton.setDisplay(d);
   aboutButton.setDisplay(d);
   setButton.setDisplay(d);
+  pngButton.setDisplay(d);
 }
 
 void CToolbar::setFocus(CActiveFocus* f){
@@ -175,6 +184,7 @@ void CToolbar::setFocus(CActiveFocus* f){
   sfButton.setFocus(f);
   aboutButton.setFocus(f);
   setButton.setFocus(f);
+  pngButton.setFocus(f);
 }
 
 void CToolbar::setFont(CFont* f){
@@ -185,6 +195,7 @@ void CToolbar::setFont(CFont* f){
   sfButton.setFont(f);
   aboutButton.setFont(f);
   setButton.setFont(f);
+  pngButton.setFont(f);
 }
 
 void CToolbar::setGfx(CGfxCollection* g){
@@ -194,6 +205,7 @@ void CToolbar::setGfx(CGfxCollection* g){
   sfButton.setGfx(g);
   aboutButton.setGfx(g);
   setButton.setGfx(g);
+  pngButton.setGfx(g);
 }
 
 void CToolbar::setInput(CInput* i){

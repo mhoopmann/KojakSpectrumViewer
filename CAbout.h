@@ -30,7 +30,7 @@ public:
   CAbout();
   ~CAbout();
 
-  void init();
+  void init(char* ver, char* bDate);
   int  logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1);
   void render();
 
@@ -45,6 +45,9 @@ private:
   CFont*        font;
 
   CButton butBack;
+
+  string version;
+  string bdate;
 
 };
 

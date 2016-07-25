@@ -24,6 +24,7 @@ CSpectrumGraph::CSpectrumGraph(){
   szY=128;
   posX=0;
   posY=0;
+  lineWidth=1;
   lowX=100;
   highX=1000;
   lowY=0;
@@ -39,6 +40,7 @@ CSpectrumGraph::CSpectrumGraph(CDisplay* d, CInput* inp){
   szY=128;
   posX=0;
   posY=0;
+  lineWidth=1;
   lowX=100;
   highX=1000;
   lowY=0;
@@ -49,6 +51,25 @@ CSpectrumGraph::CSpectrumGraph(CDisplay* d, CInput* inp){
 CSpectrumGraph::~CSpectrumGraph(){
   display=NULL;
   input=NULL;
+}
+
+void CSpectrumGraph::exportPNG(){
+  int w,h;
+  display->getWindowSize(w,h);
+  SDL_Surface* s = SDL_CreateRGBSurface(0, w, h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+  SDL_RenderReadPixels(display->renderer, NULL, SDL_PIXELFORMAT_ARGB8888, s->pixels, s->pitch);
+  SDL_Surface* s2 = SDL_PNGFormatAlpha(s);
+
+  time_t rawtime;
+  struct tm * timeinfo;
+  char fBuf[96];
+  time(&rawtime);
+  timeinfo = localtime(&rawtime);
+  strftime(fBuf, 96, "spec-%Y%m%d-%H%M%S.png", timeinfo);
+
+  SDL_SavePNG(s2,fBuf);
+  SDL_FreeSurface(s2);
+  SDL_FreeSurface(s);
 }
 
 bool CSpectrumGraph::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
@@ -100,6 +121,7 @@ bool CSpectrumGraph::logic(int mouseX, int mouseY, int mouseButton, bool mouseBu
 bool CSpectrumGraph::render(CPeptideBox& p){
   SDL_Rect r;
   size_t i,j;
+  int w;
   int k;
   int x,y;
   int x2,y2,m;
@@ -178,7 +200,9 @@ bool CSpectrumGraph::render(CPeptideBox& p){
           if(spectrum[m].x<lowX || spectrum[m].x>highX) continue;
           x=posX+(int)((spectrum[m].x-lowX)*ppuX)+10;
           SDL_SetRenderDrawColor(display->renderer,colorIons[j][i].r,colorIons[j][i].g,colorIons[j][i].b,255);
-          SDL_RenderDrawLine(display->renderer,x,y,x,y-(int)(spectrum[m].y*ppuY));
+          for(w=0;w<lineWidth;w++){
+            SDL_RenderDrawLine(display->renderer,x+w,y,x+w,y-(int)(spectrum[m].y*ppuY));
+          }
           if(i==0) st="a";
           else if(i==1) st="b";
           else if(i==2) st="c";
@@ -218,7 +242,9 @@ bool CSpectrumGraph::render(CPeptideBox& p){
           if(spectrum[m].x<lowX || spectrum[m].x>highX) continue;
           x=posX+(int)((spectrum[m].x-lowX)*ppuX)+10;
           SDL_SetRenderDrawColor(display->renderer,colorIons[j][i].r,colorIons[j][i].g,colorIons[j][i].b,255);
-          SDL_RenderDrawLine(display->renderer,x,y,x,y-(int)(spectrum[m].y*ppuY));
+          for (w = 0; w<lineWidth; w++){
+            SDL_RenderDrawLine(display->renderer,x+w,y,x+w,y-(int)(spectrum[m].y*ppuY));
+          }
           if(i==0) st="a";
           else if(i==1) st="b";
           else if(i==2) st="c";

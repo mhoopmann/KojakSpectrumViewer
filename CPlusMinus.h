@@ -14,53 +14,56 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-#ifndef _CSETTINGS_H
-#define _CSETTINGS_H
+#ifndef _CPLUSMINUS_H
+#define _CPLUSMINUS_H
 
 #include "CActiveFocus.h"
 #include "CButton.h"
-#include "CCheckbox.h"
 #include "CDisplay.h"
-#include "CDropDown.h"
-#include "CEditBox.h"
 #include "CFont.h"
-#include "CInput.h"
-#include "CPlusMinus.h"
+#include <string>
+#include <vector>
 
 using namespace std;
 
-class CSettings{
+class CPlusMinus{
 public:
+  CPlusMinus();
+  ~CPlusMinus();
 
-  CSettings();
-  ~CSettings();
+  bool active;
 
-  int     lineWidth;
-  double  tol;
-  char    tolUnit;
+  int posX;
+  int posY;
+  int szX;
 
-  void init();
-  int  logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1);
-  void render();
+  int max;
+  int min;
 
-  void setDisplay(CDisplay* d);
-  void setFocus(CActiveFocus* f);
-  void setFont(CFont* f);
-  void setInput(CInput* i);
+  int value;
+
+  int     logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1);
+  void    render();
+  void    setDisplay(CDisplay* d);
+  void    setFocus(CActiveFocus* f);
+  void    setFont(CFont* f);
+  void    setFontSize(int sz);
+  size_t  size();
 
 private:
 
   CActiveFocus* activeFocus;
-  CDisplay*     display;
-  CFont*        font;
-  CInput*       input;
+  CDisplay* display;
+  CFont* font;
 
-  CButton butApply;
-  CButton butCancel;
+  CButton buttonMinus;
+  CButton buttonPlus;
 
-  CDropDown   ddTolUnit;
-  CEditBox    ebTol;
-  CPlusMinus  pmWidth;
+  int     fontSize;
+  int     szY;
+
+  kvColor colors[2];
+  int     txtColor;
 
 };
 

@@ -63,7 +63,7 @@ void CViewer::fixLayout(){
 
 }
 
-void CViewer::init(){
+void CViewer::init(char* ver, char* bdate){
   sg.posY=32;
   sg.szX=500;
   sg.szY=300;  
@@ -110,11 +110,11 @@ void CViewer::init(){
   fileDlg.setDisplay(display);
   fileDlg.setFont(&font);
   fileDlg.setGfx(&gfx);
-  fileDlg.init();
+  fileDlg.init(ver,bdate);
 
   aboutDlg.setDisplay(display);
   aboutDlg.setFont(&font);
-  aboutDlg.init();
+  aboutDlg.init(ver,bdate);
   
   dataIndex=0;
   dt.selected=0;
@@ -234,6 +234,7 @@ bool CViewer::logic(){
       return true;
     case 2:
       state=0;
+      sg.lineWidth=setDlg.lineWidth;
       sg.spectrum.setTolerance(setDlg.tol, setDlg.tolUnit);
       if(setDlg.tolUnit==0) sprintf(str, "Tolerance: %g Da",setDlg.tol);
       else sprintf(str, "Tolerance: %g ppm", setDlg.tol);
@@ -286,6 +287,9 @@ bool CViewer::logic(){
       case 7: //settings dialog
         state=4;
         sg.spectrum.getTolerance(setDlg.tol, setDlg.tolUnit);
+        return true;
+      case 8: //export png
+        sg.exportPNG();
         return true;
       default:
         break;
@@ -369,6 +373,8 @@ void CViewer::processEvent(SDL_Event& e){
 
 bool CViewer::render(){
   SDL_Rect r;
+
+  SDL_RenderClear(display->renderer);
 
   switch(state){
   case 1:

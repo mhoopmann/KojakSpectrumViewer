@@ -22,6 +22,7 @@ CSettings::CSettings(){
   font = NULL;
   input = NULL;
 
+  lineWidth=1;
   tol = 0.01;
   tolUnit=0;
 }
@@ -47,8 +48,8 @@ void CSettings::init(){
   butApply.setCaption("Apply");
   butCancel.setCaption("Cancel");
 
-  ddTolUnit.posX=255;
-  ddTolUnit.posY=50;
+  ddTolUnit.posX=395;
+  ddTolUnit.posY=20;
   ddTolUnit.szX=55;
   ddTolUnit.szDrop=40;
   ddTolUnit.setFontSize(16);
@@ -56,17 +57,26 @@ void CSettings::init(){
   ddTolUnit.addItem("ppm");
   ddTolUnit.selected=(int)tolUnit;
 
-  ebTol.posX=150;
-  ebTol.posY=50;
+  ebTol.posX=290;
+  ebTol.posY=20;
   ebTol.szX=100;
   ebTol.setFontSize(16);
   ebTol.numeric=true;
   ebTol.setCaption(tol);
 
+  pmWidth.posX=290;
+  pmWidth.posY=50;
+  pmWidth.szX=100;
+  pmWidth.setFontSize(16);
+  pmWidth.value=1;
+  pmWidth.min=1;
+  pmWidth.max=3;
+
 }
 
 int CSettings::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
   if(butApply.logic(mouseX, mouseY, mouseButton)) {
+    lineWidth=pmWidth.value;
     ebTol.getCaption(NULL, &tol, NULL);
     tolUnit=(char)ddTolUnit.selected;
     return 2;
@@ -78,6 +88,7 @@ int CSettings::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
     return 0;
   }
   if(ebTol.logic(mouseX, mouseY, mouseButton)) return 0;
+  if(pmWidth.logic(mouseX,mouseY,mouseButton,mouseButton1)) return 0;
 
   if(activeFocus->focus == &ebTol){
     ebTol.processInput();
@@ -107,9 +118,12 @@ void CSettings::render(){
   butCancel.render();
 
   //Draw the Parameters
+  font->render(150, 50, "Line Weight:");
+  pmWidth.render();
+
   font->render(150, 20, "Mass Tolerance:");
   ebTol.render();
-  ddTolUnit.render();
+  ddTolUnit.render(); 
 
   font->fontSize = fontSize;
 
@@ -121,6 +135,7 @@ void CSettings::setDisplay(CDisplay* d){
   butCancel.setDisplay(d);
   ebTol.setDisplay(d);
   ddTolUnit.setDisplay(d);
+  pmWidth.setDisplay(d);
 }
 
 void CSettings::setFocus(CActiveFocus* f){
@@ -129,6 +144,7 @@ void CSettings::setFocus(CActiveFocus* f){
   butCancel.setFocus(f);
   ebTol.setFocus(f);
   ddTolUnit.setFocus(f);
+  pmWidth.setFocus(f);
 }
 
 void CSettings::setFont(CFont* f){
@@ -137,6 +153,7 @@ void CSettings::setFont(CFont* f){
   butCancel.setFont(f);
   ebTol.setFont(f);
   ddTolUnit.setFont(f);
+  pmWidth.setFont(f);
 }
 
 void CSettings::setInput(CInput* i){

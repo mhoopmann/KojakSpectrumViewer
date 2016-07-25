@@ -93,7 +93,7 @@ void CFileOpen::fixLayout(){
   listDir.fixLayout();
 }
 
-void CFileOpen::init(){
+void CFileOpen::init(char* ver, char* bdate){
   int i;
 
   bFirst=true;
@@ -118,7 +118,7 @@ void CFileOpen::init(){
   butBack.setCaption("About");
   butLoad.setCaption("Load");
 
-  aboutDlg.init();
+  aboutDlg.init(ver,bdate);
 
   butLoad.posX=50;
   butLoad.szX=64;
