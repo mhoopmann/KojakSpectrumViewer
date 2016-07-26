@@ -35,7 +35,7 @@ more of the processes.
 
 ## Binaries
 
-Of course, if you just want the binaries, just go to: http://kojak-ms.org
+To hell with compiling, if you just want the binaries, go to: http://kojak-ms.org
 
 ## License
 
