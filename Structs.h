@@ -35,6 +35,7 @@ typedef struct kvPalette {
   kvColor list[3];
   kvColor spectrum[3];
   kvColor spectrumIons[3][6];
+  kvColor slider;
   kvColor table[4];
   kvColor textBox[2];
   kvColor toolbar[2];

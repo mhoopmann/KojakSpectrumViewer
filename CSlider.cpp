@@ -85,7 +85,7 @@ bool CSlider::render(){
 
 void CSlider::setDisplay(CDisplay* d){
   display = d;
-  color = display->pal.buttons[0];
+  color = display->pal.slider;
 }
 
 void CSlider::setFocus(CActiveFocus* f){

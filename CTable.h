@@ -126,6 +126,8 @@ private:
   kvColor colors[4];
   int     txtColors[2];
 
+  int     bumpV;
+  int     bumpOffsetV;
   int     lastMouseY;
   double  scrollJumpV;
   bool    scrollLockV;

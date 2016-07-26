@@ -64,6 +64,7 @@ void CDisplay::defaultColors(){
   pal.list[2]=extractColors("255,156,0");
   pal.toolbar[0]=extractColors("85,98,112");
   pal.toolbar[1]=extractColors("68,74,80");
+  pal.slider = extractColors("68,74,80");
   pal.spectrum[0]=extractColors("255,255,255");
   pal.spectrum[1]=extractColors("180,180,180");
   pal.spectrum[2]=extractColors("32,32,32");
@@ -231,6 +232,7 @@ void CDisplay::readPalette(){
     else if(object.compare("list.selected")==0) pal.list[2]=extractColors(rgb);
     else if(object.compare("toolbar.color")==0) pal.toolbar[0]=extractColors(rgb);
     else if(object.compare("toolbar.separator")==0) pal.toolbar[1]=extractColors(rgb);
+    else if(object.compare("slider.color")==0) pal.slider=extractColors(rgb);
     else if(object.compare("spectrum.background")==0) pal.spectrum[0]=extractColors(rgb);
     else if(object.compare("spectrum.graph")==0) pal.spectrum[1]=extractColors(rgb);
     else if(object.compare("spectrum.graph_axis")==0) pal.spectrum[2]=extractColors(rgb);

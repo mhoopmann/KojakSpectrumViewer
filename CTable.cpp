@@ -33,6 +33,7 @@ CTable::CTable(){
   showScrollbarV=false;
   scrollLockV=false;
   scrollOffsetV=0;
+  bumpOffsetV=0;
 
   showScrollbarH=false;
   scrollLockH=false;
@@ -194,6 +195,8 @@ void CTable::fixLayout(){
     scrollOffsetV = 0;
     stepV=(int)((viewSize-16)/scrollJumpV);
     if(stepV<1) stepV=1;
+    bumpV=viewSize-16;
+    bumpOffsetV=0;
   } else showScrollbarV=false;
 
   //Horizontal Scrolling
@@ -246,6 +249,7 @@ int CTable::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
     if(mouseX>=szX-8 && mouseX<=szX-2 && mouseY>=posY+16+scrollOffsetV && mouseY<=posY+16+scrollOffsetV+thumbHeightV){
       if(scrollLockV){
         scrollOffsetV+=(mouseY-lastMouseY);
+        bumpOffsetV=0;
         if(scrollOffsetV>thumbMaxV) scrollOffsetV=thumbMaxV;
         if(scrollOffsetV<0) scrollOffsetV=0;
         lastMouseY=mouseY;
@@ -256,6 +260,7 @@ int CTable::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
       return 1;
     } else if(scrollLockV){
       scrollOffsetV+=(mouseY-lastMouseY);
+      bumpOffsetV=0;
       if(scrollOffsetV>thumbMaxV) scrollOffsetV=thumbMaxV;
       if(scrollOffsetV<0) scrollOffsetV=0;
       lastMouseY=mouseY;
@@ -267,12 +272,20 @@ int CTable::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
   if(mouseButton && showScrollbarV){
     if(mouseX>=szX-8 && mouseX<=szX-2 && (mouseY>=posY+16 && mouseY<=posY+szY-10)){
       if(mouseY<posY+16+scrollOffsetV){
-        scrollOffsetV-=stepV;
+        bumpOffsetV-=bumpV;
+        while(bumpOffsetV<0){
+          bumpOffsetV += (int)(stepV*scrollJumpV);
+          scrollOffsetV-=stepV;
+        }
         if(scrollOffsetV>thumbMaxV) scrollOffsetV=thumbMaxV;
         if(scrollOffsetV<0) scrollOffsetV=0;
         return 1;
       } else if(mouseY>posY+16+scrollOffsetV+thumbHeightV){
-        scrollOffsetV+=stepV;
+        bumpOffsetV+=bumpV;
+        while (bumpOffsetV>stepV*scrollJumpV){
+          bumpOffsetV -= (int)(stepV*scrollJumpV);
+          scrollOffsetV+=stepV;
+        }
         if(scrollOffsetV>thumbMaxV) scrollOffsetV=thumbMaxV;
         if(scrollOffsetV<0) scrollOffsetV=0;
         return 1;
@@ -330,7 +343,7 @@ int CTable::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
   }
 
   if(mouseButton==1 && mouseX>=posX && mouseX<=(posX+szX-10) && mouseY>=posY+16 && mouseY<=(posY+szY-10)){
-    int i=mouseY-posY-16+(int)(scrollOffsetV*scrollJumpV);
+    int i=mouseY-posY-16+(int)(scrollOffsetV*scrollJumpV+bumpOffsetV);
     i/=16;
     if(i<(int)rowsFilt.size()) selected = i;
     return 2;
@@ -406,7 +419,7 @@ bool CTable::render(){
   for(j=0;j<rowsFilt.size();j++){
 
     r.x=0-(int)(scrollOffsetH*scrollJumpH);
-    r.y=(int)j*16-(int)(scrollOffsetV*scrollJumpV);
+    r.y=(int)j*16-(int)(scrollOffsetV*scrollJumpV+bumpOffsetV);
     if(r.y>vp.h) break;
     if(r.y+16<0) continue;
     
