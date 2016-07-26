@@ -39,4 +39,4 @@ Of course, if you just want the binaries, just go to: http://kojak-ms.org
 
 ## License
 
-KojakSpectrumViewer code is available under the Apache License, Version 2.0. SDL_SavePNG code retains its zlib/libpng license.
+KojakSpectrumViewer code is available under the Apache License, Version 2.0. SDL_SavePNG (https://github.com/driedfruit/SDL_SavePNG) code retains its zlib/libpng license.
