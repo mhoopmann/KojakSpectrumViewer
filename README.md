@@ -1,6 +1,8 @@
 # KojakSpectrumViewer
 MS/MS spectral search results viewer. Applicable for any search results in pepXML. Specializes in cross-linked search results.
 
+## Install
+
 The software works great, but this repo is a work in progress. Compilation may be a little rough. If all you know how to do is: 
 ```
 configure
@@ -31,4 +33,10 @@ I apologize in advance for the lack of user friendliness to the entire process.
 Over time I plan on improving this repo to reduce the complexity for compilation and automate
 more of the processes.
 
+## Binaries
+
 Of course, if you just want the binaries, just go to: http://kojak-ms.org
+
+## License
+
+KojakSpectrumViewer code is available under the Apache License, Version 2.0. SDL_SavePNG code retains its zlib/libpng license.
