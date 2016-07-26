@@ -11,7 +11,8 @@ make install
 ```
 then maybe you should ask for help from someone who better knows their way around a computer. :)
 
-In Linux: There is a Makefile, you can try to make right from the outset. Just be sure to do the following:
+#### Linux: 
+There is a Makefile, you can try to make right from the outset. Just be sure to do the following:
 
 1. Clone and compile the MSToolkit: https://github.com/mhoopmann/mstoolkit
 2. Install SDL and dev kit: https://www.libsdl.org/
@@ -19,7 +20,8 @@ In Linux: There is a Makefile, you can try to make right from the outset. Just b
 4. Install PNG and dev kit: http://www.libpng.org/pub/png/libpng.html
 5. Update the Makefile MSTOOLKITPATH
 
-In Windows: Much the same as above, if using a Linux-like environment (MinGW/MSYS/CygWin etc). 
+#### Windows: 
+Much the same as Linuxabove, if using a Linux-like environment (MinGW/MSYS/CygWin etc). 
 If using Visual Studio (works great this way), try the following:
 
 1. Clone and compile the MSToolkit as a library.
