@@ -65,8 +65,9 @@ void CViewer::fixLayout(){
 
 void CViewer::init(char* ver, char* bdate){
   sg.posY=32;
-  sg.szX=500;
-  sg.szY=300;  
+  sg.resize(500,300);
+//  sg.szX=500;
+//  sg.szY=300;  
 
 #ifdef GCC
   gfx.loadGfx("./Fonts/icons.bmp",display->renderer);
@@ -234,6 +235,7 @@ bool CViewer::logic(){
       return true;
     case 2:
       state=0;
+      sg.fontSize=setDlg.sgFontSize;
       sg.lineWidth=setDlg.lineWidth;
       sg.spectrum.setTolerance(setDlg.tol, setDlg.tolUnit);
       if(setDlg.tolUnit==0) sprintf(str, "Tolerance: %g Da",setDlg.tol);
@@ -308,7 +310,8 @@ bool CViewer::logic(){
   val=sliderV.logic(mouseX, mouseY, mouseButton, mouseButton1);
   if(val<10000){
     if(val==0) return true;
-    sg.szX+=val;
+    sg.resize(sg.getSizeX() + val, sg.getSizeY());
+    //sg.szX+=val;
     dt.szX+=val;
     dt.fixLayout();
     msgBox.szX+=val;
@@ -323,7 +326,8 @@ bool CViewer::logic(){
   val=sliderH.logic(mouseX, mouseY, mouseButton, mouseButton1);
   if(val<10000){
     if(val==0) return true;
-    sg.szY+=val;
+    sg.resize(sg.getSizeX(), sg.getSizeY()+val);
+    //sg.szY+=val;
     dt.posY+=val;
     dt.szY-=val;
     dt.fixLayout();

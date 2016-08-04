@@ -35,6 +35,7 @@ public:
   CSettings();
   ~CSettings();
 
+  int     sgFontSize;
   int     lineWidth;
   double  tol;
   char    tolUnit;
@@ -60,6 +61,7 @@ private:
 
   CDropDown   ddTolUnit;
   CEditBox    ebTol;
+  CPlusMinus  pmFontSize;
   CPlusMinus  pmWidth;
 
 };

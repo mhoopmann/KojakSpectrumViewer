@@ -87,6 +87,13 @@ bool CFont::loadFont(char* fname){
       }
       TTF_CloseFont(font);
       font=NULL;
+      font = TTF_OpenFont("Fonts\\Carlito-alphabeta.ttf",i);
+      setText(30, texture[i][j][30], j);
+      SDL_QueryTexture(texture[i][j][30], NULL, NULL, &rect[i][30].w, &rect[i][30].h);
+      setText(31, texture[i][j][31], j);
+      SDL_QueryTexture(texture[i][j][31], NULL, NULL, &rect[i][31].w, &rect[i][31].h);
+      TTF_CloseFont(font);
+      font = NULL;
     }
   }
   return true;
@@ -135,13 +142,16 @@ void CFont::setFontSize(int sz){
 bool CFont::setText(char c, SDL_Texture*& dest, int color){
   SDL_Color col;
   char str[2];
-  str[0]=c;
+  if (c == 30) str[0]='a';
+  else if (c == 31) str[0] = 'b';
+  else  str[0]=c;
   str[1]='\0';
   if(dest!=NULL) SDL_DestroyTexture(dest);
   col.r=display->txtColors[color].r;
   col.g=display->txtColors[color].g;
   col.b=display->txtColors[color].b;
-  SDL_Surface* surf = TTF_RenderText_Blended(font,str,col);
+  SDL_Surface* surf;
+  surf = TTF_RenderText_Blended(font,str,col);
   if(surf==NULL) return false;
   dest = SDL_CreateTextureFromSurface(display->renderer,surf);
   if(dest==NULL) return false;

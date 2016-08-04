@@ -25,6 +25,7 @@ limitations under the License.
 #include "CPeptideBox.h"
 #include "savepng.h"
 #include <ctime>
+#include <iostream>
 
 class CSpectrumGraph{
 public:
@@ -35,33 +36,45 @@ public:
 
   int posX;
   int posY;
-  int szX;
-  int szY;
+  
+  int fontSize;
   int lineWidth;
 
   CDataSet spectrum;
 
+  int getSizeX();
+  int getSizeY();
   void exportPNG();
   bool logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1);
   bool render(CPeptideBox& p);
   void resetView();
+  void resize(int sizeX, int sizeY);
   void setDisplay(CDisplay* d);
   void setFont(CFont* f);
   void setInput(CInput* inp);
 
 private:
 
+  bool findSpace(int startX, int startY, int width, int height, int& x, int& y);
+  void markGrid(int x1, int y1, int x2, int y2);
   int matchPeak(double d);
+  void resetGrid();
 
   CFont* font;
   CInput* input;
   CDisplay* display;
+  bool** textGrid;
+
+  int szX;
+  int szY;
 
   double lowX,lowY;
   double highX,highY;
   bool zoomLock;
   int lockPos1;
   int lockPos2;
+  int gridX,gridY;
+  int gridSize;
 
   kvColor color[3];
   kvColor colorIons[3][6];

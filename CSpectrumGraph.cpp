@@ -24,12 +24,22 @@ CSpectrumGraph::CSpectrumGraph(){
   szY=128;
   posX=0;
   posY=0;
+  fontSize=10;
   lineWidth=1;
   lowX=100;
   highX=1000;
   lowY=0;
   highY=1000;
   zoomLock=false;
+  gridSize=6;
+  
+  int i;
+  gridX=szX/gridSize+1;
+  gridY=szY/gridSize+1;
+  textGrid = new bool*[gridX];
+  for (i = 0; i < gridX; i++){
+    textGrid[i] = new bool[gridY];
+  }
 }
 
 CSpectrumGraph::CSpectrumGraph(CDisplay* d, CInput* inp){
@@ -40,17 +50,32 @@ CSpectrumGraph::CSpectrumGraph(CDisplay* d, CInput* inp){
   szY=128;
   posX=0;
   posY=0;
+  fontSize=10;
   lineWidth=1;
   lowX=100;
   highX=1000;
   lowY=0;
   highY=1000;
   zoomLock=false;
+  gridSize=8;
+
+  int i;
+  gridX = szX / gridSize+1;
+  gridY = szY / gridSize+1;
+  textGrid = new bool*[gridX];
+  for (i = 0; i < gridX; i++){
+    textGrid[i] = new bool[gridY];
+  }
+
 }
 
 CSpectrumGraph::~CSpectrumGraph(){
   display=NULL;
   input=NULL;
+  for (int i = 0; i < gridX; i++){
+    delete [] textGrid[i];
+  }
+  delete[] textGrid;
 }
 
 void CSpectrumGraph::exportPNG(){
@@ -70,6 +95,97 @@ void CSpectrumGraph::exportPNG(){
   SDL_SavePNG(s2,fBuf);
   SDL_FreeSurface(s2);
   SDL_FreeSurface(s);
+}
+
+bool CSpectrumGraph::findSpace(int startX, int startY, int width, int height, int& x, int& y){
+  //convert width and height to number of grid spaces
+  int w = width / gridSize+1;
+  int h = height / gridSize+1;
+
+  //convert start positions to grid coordinates
+  int a = (startX - posX) / gridSize;
+  int b = (startY - posY) / gridSize;
+  int refA=a;
+  int refB=b;
+
+  int i,j;
+  int vert, hor;
+  bool bFill;
+
+  for (hor = 0; hor < 6; hor++){
+    for (vert = 0; vert < 6+hor; vert++){
+
+      bFill = false;
+      for (j = b-vert; j < b-vert + h; j++){
+        if (j<0) {
+          bFill=true;
+          break;
+        }
+        for (i = a+hor; i < a+hor + w; i++){
+          if (i<0 || i>gridX-1) {
+            bFill=true;
+            break;
+          }
+          if (textGrid[i][j]){
+            bFill = true;
+            break;
+          }
+        }
+        if (bFill) break;
+      }
+      if (!bFill) {
+        a+=hor;
+        b-=vert;
+        break;
+      }
+
+      bFill = false;
+      for (j = b - vert; j < b - vert + h; j++){
+        if (j<0) {
+          bFill=true;
+          break;
+        }
+        for (i = a - hor; i < a - hor + w; i++){
+          if (i<0 || i>gridX - 1) {
+            bFill=true;
+            break;
+          }
+          if (textGrid[i][j]){
+            bFill = true;
+            break;
+          }
+        }
+        if (bFill) break;
+      }
+      if (!bFill) {
+        a-=hor;
+        b-=vert;
+        break;
+      }
+
+    }
+    if (!bFill) break;
+  }
+
+  if (bFill) return false;
+
+  //Mark the new positions as filled
+  x = posX + a*gridSize;
+  y = posY + b*gridSize;
+  for (j = b; j < b + h; j++){
+    for (i = a; i < a + w; i++){
+      textGrid[i][j]=true;
+    }
+  }
+  return true;
+}
+
+int CSpectrumGraph::getSizeX(){
+  return szX;
+}
+
+int CSpectrumGraph::getSizeY(){
+  return szY;
 }
 
 bool CSpectrumGraph::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
@@ -118,18 +234,50 @@ bool CSpectrumGraph::logic(int mouseX, int mouseY, int mouseButton, bool mouseBu
   return false;
 }
 
+void CSpectrumGraph::markGrid(int x1, int y1, int x2, int y2){
+
+  //convert x,y to grid boundaries
+  int a1 = (x1-posX) / gridSize;
+  int a2 = (x2-posX) / gridSize;
+  int b1 = (y1-posY) / gridSize;
+  int b2 = (y2-posY) / gridSize;
+
+  int x, y;
+
+  if (a2 < a1) {
+    x=a2;
+    a2=a1;
+    a1=x;
+  }
+  if (b2 < b1){
+    x=b2;
+    b2=b1;
+    b1=x;
+  }
+
+  if (a2>gridX) a2=gridX;
+  if (b2>gridY) b2=gridY;
+
+  for (x=a1;x<=a2;x++){
+    for (y=b1;y<=b2;y++){
+      textGrid[x][y]=true;
+    }
+  }
+}
+
 bool CSpectrumGraph::render(CPeptideBox& p){
   SDL_Rect r;
   size_t i,j;
   int w;
   int k;
   int x,y;
+  int yy;
   int x2,y2,m;
   double ppuX,ppuY;  //pixels per unit
   char str[32];
   string st;
   CFragmentLists* f;
-  int fontSize=font->fontSize;
+  int fs=font->fontSize;
 
   //Render background
   r.x=posX;
@@ -144,6 +292,9 @@ bool CSpectrumGraph::render(CPeptideBox& p){
   if(highY>0) ppuY = (double)(szY-65)/highY;
   else ppuY=0;
 
+  //reset the grid
+  resetGrid();
+
   //Draw spectrum
   SDL_SetRenderDrawColor(display->renderer,color[1].r,color[1].g,color[1].b,255);
   y=posY+szY-15;
@@ -152,6 +303,7 @@ bool CSpectrumGraph::render(CPeptideBox& p){
       for(i=0;i<spectrum.size();i++) {
         if(spectrum[i].x<lowX || spectrum[i].x>highX) continue;
         x=posX+(int)((spectrum[i].x-lowX)*ppuX)+10;
+        markGrid(x, y, x, y - (int)(spectrum[i].y*ppuY));
         SDL_RenderDrawLine(display->renderer,x,y,x,y-(int)(spectrum[i].y*ppuY));
       }
       break;
@@ -167,6 +319,7 @@ bool CSpectrumGraph::render(CPeptideBox& p){
           y2=y;
           continue;
         }
+        markGrid(x2,y2,x,y);
         SDL_RenderDrawLine(display->renderer,x2,y2,x,y);
         x2=x;
         y2=y;
@@ -178,7 +331,7 @@ bool CSpectrumGraph::render(CPeptideBox& p){
   }
 
   //Color fragment ions, peptide A
-  font->fontSize=10;
+  font->fontSize=fontSize;
   y=posY+szY-15;
   if(p.showPeptide(true)){
     f=p.getIonSeries();
@@ -199,9 +352,10 @@ bool CSpectrumGraph::render(CPeptideBox& p){
           f->setMatch((int)i,(int)j,k,true);
           if(spectrum[m].x<lowX || spectrum[m].x>highX) continue;
           x=posX+(int)((spectrum[m].x-lowX)*ppuX)+10;
+          yy = y - (int)(spectrum[m].y*ppuY);
           SDL_SetRenderDrawColor(display->renderer,colorIons[j][i].r,colorIons[j][i].g,colorIons[j][i].b,255);
-          for(w=0;w<lineWidth;w++){
-            SDL_RenderDrawLine(display->renderer,x+w,y,x+w,y-(int)(spectrum[m].y*ppuY));
+          for(w=-lineWidth/2;w<lineWidth/2+lineWidth%2;w++){
+            SDL_RenderDrawLine(display->renderer,x+w,y,x+w,yy);
           }
           if(i==0) st="a";
           else if(i==1) st="b";
@@ -214,8 +368,38 @@ bool CSpectrumGraph::render(CPeptideBox& p){
           if(j==0) st+="+";
           else if(j==1) st+="++";
           else if(j==2) st+="+++";
-          if(p.getIonSeries(true)!=NULL) st+=", alpha";
-          font->render(x-5,y-(int)(spectrum[m].y*ppuY)-5,st,txtColor,true);
+          if(p.getIonSeries(true)!=NULL) st+=(char)30;
+          w= font->getStringWidth(st);
+          if (findSpace(x - w/2, yy - 2,w, fontSize, x2, y2)){
+            font->render(x2,y2,st,txtColor);
+
+            //draw reference line if necessary
+            if (x2 + w<x) {
+              x2 += w + 1;
+            } else if (x2>x) {
+              x2 = x2;
+            } else {
+              x2 = x;
+            }
+            if (y2 + fontSize > yy){
+              y2 += fontSize / 2;
+            } else {
+              y2 += fontSize;
+            }
+            int xDif = x2 - x;
+            int yDif = y2 - yy;
+            SDL_SetRenderDrawColor(display->renderer, color[1].r,0, color[1].b, 255);
+            if (abs(xDif) < abs(yDif) && yDif<-10){
+              int g = abs(yDif) - abs(xDif);
+              SDL_RenderDrawLine(display->renderer, x, yy - 2, x, yy - g);
+              SDL_RenderDrawLine(display->renderer, x, yy - g, x + xDif, yy + yDif);
+            } else if (abs(xDif)>w / 2){
+              SDL_RenderDrawLine(display->renderer, x, yy - 2, x + xDif, yy + yDif);
+            } else if (yDif<-10) {
+              SDL_RenderDrawLine(display->renderer, x, yy - 2, x, yy + yDif);
+            }
+            
+          }
         }
       }
     }
@@ -241,9 +425,10 @@ bool CSpectrumGraph::render(CPeptideBox& p){
           f->setMatch((int)i,(int)j,k,true);
           if(spectrum[m].x<lowX || spectrum[m].x>highX) continue;
           x=posX+(int)((spectrum[m].x-lowX)*ppuX)+10;
+          yy = y - (int)(spectrum[m].y*ppuY);
           SDL_SetRenderDrawColor(display->renderer,colorIons[j][i].r,colorIons[j][i].g,colorIons[j][i].b,255);
-          for (w = 0; w<lineWidth; w++){
-            SDL_RenderDrawLine(display->renderer,x+w,y,x+w,y-(int)(spectrum[m].y*ppuY));
+          for (w = -lineWidth / 2; w<lineWidth / 2 + lineWidth % 2; w++){
+            SDL_RenderDrawLine(display->renderer,x+w,y,x+w,yy);
           }
           if(i==0) st="a";
           else if(i==1) st="b";
@@ -256,8 +441,41 @@ bool CSpectrumGraph::render(CPeptideBox& p){
           if(j==0) st+="+";
           else if(j==1) st+="++";
           else if(j==2) st+="+++";
-          st+=", beta";
-          font->render(x-5,y-(int)(spectrum[m].y*ppuY)-5,st,txtColor,true);
+          st+=(char)31;
+          w = font->getStringWidth(st);
+          if (findSpace(x - w/2, yy - 2, w, fontSize, x2, y2)){
+            font->render(x2,y2,st,txtColor);
+
+            //draw reference line if necessary
+            if (x2+w<x) {
+              x2+=w+1;
+            } else if (x2>x) {
+              x2 = x2;
+            } else {
+              x2 = x;
+            }
+            if (y2 + fontSize > yy){
+              y2+=fontSize/2;
+            } else {
+              y2+=fontSize;
+            }
+            int xDif = x2 - x;
+            int yDif = y2 - yy;
+            SDL_SetRenderDrawColor(display->renderer, color[1].r, 0, color[1].b, 255);            
+            if (abs(xDif) < abs(yDif) && yDif<-10){
+              int g = abs(yDif) - abs(xDif);
+              SDL_RenderDrawLine(display->renderer, x, yy - 2, x, yy - g);
+              markGrid(x, yy-2, x, yy-g);
+              SDL_RenderDrawLine(display->renderer, x, yy - g, x + xDif, yy + yDif);
+              markGrid(x, yy - g, x + xDif, yy + yDif);
+            } else if (abs(xDif)>w/2){
+              SDL_RenderDrawLine(display->renderer, x, yy - 2, x + xDif, yy + yDif);
+              markGrid(x, yy - 2, x + xDif, yy + yDif);
+            } else if (yDif<-10) {
+              SDL_RenderDrawLine(display->renderer, x, yy - 2, x, yy + yDif);
+              markGrid(x, yy - 2, x, yy + yDif);
+            }
+          }
         }
       }
     }
@@ -290,6 +508,20 @@ bool CSpectrumGraph::render(CPeptideBox& p){
     font->render(2,posY+38,str,txtColor);
   }
 
+  /*
+  r.h=fontSize+2;
+  r.w=fontSize+2;
+  for (y = 0; y<gridY; y++){
+    for (x=0;x<gridX;x++){
+      if (textGrid[x][y]) continue;
+      r.y=posY+y*(fontSize+2);
+      r.x=posX+x*(fontSize+2);
+      SDL_RenderDrawRect(display->renderer,&r);
+    }
+  }
+  */
+
+
   //Draw zoom window
   if(zoomLock){
     r.x=lockPos1;
@@ -304,9 +536,18 @@ bool CSpectrumGraph::render(CPeptideBox& p){
     SDL_RenderDrawLine(display->renderer,lockPos2,posY+50,lockPos2,posY+szY-15);
   }
 
-  font->fontSize=fontSize;
+  font->fontSize=fs;
   f=NULL;
   return true;
+}
+
+void CSpectrumGraph::resetGrid(){
+  int x, y;
+  for (x = 0; x < gridX; x++){
+    for (y = 0; y < gridY; y++){
+      textGrid[x][y] = false;
+    }
+  }
 }
 
 void CSpectrumGraph::resetView(){
@@ -315,6 +556,27 @@ void CSpectrumGraph::resetView(){
   highX=spectrum.getMaxX()+10;
   lowY=0;
   highY=spectrum.getMaxY();
+}
+
+void CSpectrumGraph::resize(int sizeX, int sizeY){
+
+  int i;
+
+  szX=sizeX;
+  szY=sizeY;
+
+  for (i = 0; i < gridX; i++){
+    delete[] textGrid[i];
+  }
+  delete[] textGrid;
+    
+  gridX = szX / gridSize + 1;
+  gridY = szY / gridSize + 1;
+  textGrid = new bool*[gridX];
+  for (i = 0; i < gridX; i++){
+    textGrid[i] = new bool[gridY];
+  }
+
 }
 
 void CSpectrumGraph::setDisplay(CDisplay *d){

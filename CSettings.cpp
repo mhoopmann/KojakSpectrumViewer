@@ -22,6 +22,7 @@ CSettings::CSettings(){
   font = NULL;
   input = NULL;
 
+  sgFontSize=10;
   lineWidth=1;
   tol = 0.01;
   tolUnit=0;
@@ -72,10 +73,19 @@ void CSettings::init(){
   pmWidth.min=1;
   pmWidth.max=3;
 
+  pmFontSize.posX=290;
+  pmFontSize.posY=80;
+  pmFontSize.szX=100;
+  pmFontSize.setFontSize(16);
+  pmFontSize.value=10;
+  pmFontSize.min=10;
+  pmFontSize.max=18;
+
 }
 
 int CSettings::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1){
   if(butApply.logic(mouseX, mouseY, mouseButton)) {
+    sgFontSize=pmFontSize.value;
     lineWidth=pmWidth.value;
     ebTol.getCaption(NULL, &tol, NULL);
     tolUnit=(char)ddTolUnit.selected;
@@ -89,6 +99,7 @@ int CSettings::logic(int mouseX, int mouseY, int mouseButton, bool mouseButton1)
   }
   if(ebTol.logic(mouseX, mouseY, mouseButton)) return 0;
   if(pmWidth.logic(mouseX,mouseY,mouseButton,mouseButton1)) return 0;
+  if(pmFontSize.logic(mouseX, mouseY, mouseButton, mouseButton1)) return 0;
 
   if(activeFocus->focus == &ebTol){
     ebTol.processInput();
@@ -121,6 +132,9 @@ void CSettings::render(){
   font->render(150, 50, "Line Weight:");
   pmWidth.render();
 
+  font->render(150,80,"Graph Font Size:");
+  pmFontSize.render();
+
   font->render(150, 20, "Mass Tolerance:");
   ebTol.render();
   ddTolUnit.render(); 
@@ -135,6 +149,7 @@ void CSettings::setDisplay(CDisplay* d){
   butCancel.setDisplay(d);
   ebTol.setDisplay(d);
   ddTolUnit.setDisplay(d);
+  pmFontSize.setDisplay(d);
   pmWidth.setDisplay(d);
 }
 
@@ -144,6 +159,7 @@ void CSettings::setFocus(CActiveFocus* f){
   butCancel.setFocus(f);
   ebTol.setFocus(f);
   ddTolUnit.setFocus(f);
+  pmFontSize.setFocus(f);
   pmWidth.setFocus(f);
 }
 
@@ -153,6 +169,7 @@ void CSettings::setFont(CFont* f){
   butCancel.setFont(f);
   ebTol.setFont(f);
   ddTolUnit.setFont(f);
+  pmFontSize.setFont(f);
   pmWidth.setFont(f);
 }
 
