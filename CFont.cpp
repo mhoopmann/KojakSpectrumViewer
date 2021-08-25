@@ -87,7 +87,11 @@ bool CFont::loadFont(char* fname){
       }
       TTF_CloseFont(font);
       font=NULL;
+#ifdef GCC
+      font = TTF_OpenFont("./Fonts/Carlito-alphabeta.ttf",i);
+#else
       font = TTF_OpenFont("Fonts\\Carlito-alphabeta.ttf",i);
+#endif
       setText(30, texture[i][j][30], j);
       SDL_QueryTexture(texture[i][j][30], NULL, NULL, &rect[i][30].w, &rect[i][30].h);
       setText(31, texture[i][j][31], j);
