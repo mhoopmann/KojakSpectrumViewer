@@ -43,7 +43,7 @@ public:
   void setDisplay   (CDisplay* d);
   void setFont      (CFont* f);
   void setMatch     (int ion, int ch, int index, bool value);
-  void setPeptide   (string pep, int ch, int linkPos=-1, int linkPos2=-1, double linkMass=0.0);
+  void setPeptide   (string pep, int ch, int linkPos=-1, int linkPos2=-1, double linkMass=0.0, bool n15=false);
   int  size         ();
 
   int posX;
@@ -75,8 +75,10 @@ private:
   bool** zMatch;
 
   double aaMass[128];
+  double aaMass15n[128];
   int charge;
   int ionCount;
+  bool is15N;
   int offsetX;
   int offsetY;
   string peptide;

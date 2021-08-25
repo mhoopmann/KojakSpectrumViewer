@@ -429,8 +429,8 @@ void CPeptideBox::setPSM(kvPSM& psm){
 
   cbPepA.active=true;
   cbPepA.checked=true;
-  if(psm.linkType==1) fragPepA.setPeptide(psm.peptideA,1,psm.linkA,psm.linkB,psm.compMassA);
-  else fragPepA.setPeptide(psm.peptideA,1,psm.linkA,-1,psm.compMassA);
+  if(psm.linkType==1) fragPepA.setPeptide(psm.peptideA,1,psm.linkA,psm.linkB,psm.compMassA,psm.n15A);
+  else fragPepA.setPeptide(psm.peptideA, 1, psm.linkA, -1, psm.compMassA, psm.n15A);
   for(i=0;i<psm.modA->size();i++){
     fragPepA.addMod(psm.modA->at(i).pos,psm.modA->at(i).mass);
   }
@@ -454,7 +454,7 @@ void CPeptideBox::setPSM(kvPSM& psm){
     }
     cbPepB.active=true;
     cbPepB.checked=true;
-    fragPepB.setPeptide(psm.peptideB,1,psm.linkB,-1,psm.compMassB);
+    fragPepB.setPeptide(psm.peptideB, 1, psm.linkB, -1, psm.compMassB, psm.n15B);
     for(i=0;i<psm.modB->size();i++){
       fragPepB.addMod(psm.modB->at(i).pos,psm.modB->at(i).mass);
     }

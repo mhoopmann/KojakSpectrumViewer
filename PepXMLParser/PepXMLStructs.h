@@ -10,8 +10,13 @@ typedef struct PepXMLError {
   double prob;
 } PepXMLError;
 
+typedef struct PepXMLParameter {
+  string name;
+  string value;
+} PepXMLParameter;
+
 typedef struct PepXMLPepMod {
-  char index;
+  double massDiff;
   char pos; //0-based
 } PepXMLPepMod;
 
@@ -25,6 +30,7 @@ typedef struct PepXMLXL {
   double mass;
 } PepXMLXL;
 
+/*
 typedef struct PepXMLMod {
   char aa;              //the amino acid, stored as letter in pepXML, returned as position when requested
   double massSearch;    //mass that was in the search parameters
@@ -33,5 +39,6 @@ typedef struct PepXMLMod {
   double massDiffStd;   //standard representation of the diffential mass
   string label;         //Give it a name
 } PepXMLMod;
+*/
 
 #endif

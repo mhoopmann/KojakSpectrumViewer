@@ -103,7 +103,7 @@ int CResults::indexFile(string& s){
 int CResults::readPepXML(char* fn, CTable* t){
 
   PepXMLParser3 p;
-  PepXMLMod mod;
+  PepXMLPepMod mod;
   kvPSM psm;
   kvMod m;
   size_t i,k;
@@ -112,6 +112,7 @@ int CResults::readPepXML(char* fn, CTable* t){
   char str[256];
   string s;
   kvTableDP dp;
+  string n15tag;
 
   //Clear any previous data
   psms->clear();
@@ -119,6 +120,8 @@ int CResults::readPepXML(char* fn, CTable* t){
   dataFilesActive->clear();
 
   p.readFile(fn);
+  n15tag = p.getParameter("15N_filter");
+  if(n15tag.size()==0) n15tag="nullNULL";
   for(i=0;i<p.size();i++){
     if(p[i].psms->size()==0) continue;
     psm.clear();
@@ -129,14 +132,14 @@ int CResults::readPepXML(char* fn, CTable* t){
     psm.peptideB=p.getPeptide(i,false,1,true);
     for(k=0;k<p.getPeptideModCount(i);k++){
       mod=p.getPeptideMod(i,k);
-      m.pos=(int)mod.aa;
-      m.mass=mod.massSearch;
+      m.pos=mod.pos;
+      m.mass=mod.massDiff;
       psm.modA->push_back(m);
     }
     for(k=0;k<p.getPeptideModCount(i,1,true);k++){
       mod=p.getPeptideMod(i,k,1,true);
-      m.pos=(int)mod.aa;
-      m.mass=mod.massSearch;
+      m.pos=mod.pos;
+      m.mass=mod.massDiff;
       psm.modB->push_back(m);
     }
     switch(p.getLinkType(i)){
@@ -236,6 +239,7 @@ int CResults::readPepXML(char* fn, CTable* t){
     dp.ID=t->getColumn("Protein");
     if(dp.ID==-1) dp.ID=t->addColumn("Protein",2,true);
     dp.sVal=p.getProtein(i,0);
+    if(dp.sVal.find(n15tag)==0) psms->back().n15A=true;
     if(p[i][0].peptide->proteins->size()>1){
       sprintf(str," +%d",(int)p[i][0].peptide->proteins->size()-1);
       dp.sVal+=str;
@@ -259,6 +263,7 @@ int CResults::readPepXML(char* fn, CTable* t){
       dp.ID=t->getColumn("ProteinB");
       if(dp.ID==-1) dp.ID=t->addColumn("ProteinB",2,true);
       dp.sVal=p.getProtein(i,0,1,true);
+      if (dp.sVal.find(n15tag) ==0) psms->back().n15B = true;
       if(p[i][0].xlPeptide->proteins->size()>1){
         sprintf(str," +%d",(int)p[i][0].xlPeptide->proteins->size()-1);
         dp.sVal+=str;

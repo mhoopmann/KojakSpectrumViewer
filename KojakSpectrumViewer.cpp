@@ -20,8 +20,8 @@ limitations under the License.
 #include "CInput.h"
 #include "CViewer.h"
 
-#define VERSION "Version 0.9 (alpha 5)"
-#define BDATE "July 25, 2016"
+#define VERSION "Version 1.0 (alpha 1)"
+#define BDATE "August 25, 2021"
 
 int main( int argc, char* args[] ) {
   

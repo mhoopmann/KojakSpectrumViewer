@@ -4,7 +4,11 @@
 * This code is free software, available under zlib/libpng license.
 * http://www.libpng.org/pub/png/src/libpng-LICENSE.txt
 */
+#ifdef GCC
+#include <SDL2/SDL.h>
+#else
 #include <SDL.h>
+#endif
 #include <png.h>
 
 #define SUCCESS 0

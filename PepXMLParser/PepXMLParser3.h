@@ -37,10 +37,11 @@ public:
   PepXMLXL    getLinker             (size_t index, char rank=1);
   bool        getLinkSites          (size_t index, char& a, char& b, char rank=1);
   char        getLinkType           (size_t index, char rank=1);
+  string      getParameter          (char* name); //NULL to get next instance of parameter
   string      getPeptide            (size_t index, bool mod=false, char rank=1, bool link=false);
-  PepXMLMod   getPeptideMod         (size_t pepIndex, size_t modIndex, char rank=1, bool link=false);
+  PepXMLPepMod   getPeptideMod         (size_t pepIndex, size_t modIndex, char rank=1, bool link=false);
   size_t      getPeptideModCount    (size_t index, char rank=1, bool link=false);
-  PepXMLMod   getPeptideModFromList (int modIndex);
+  //PepXMLMod   getPeptideModFromList (int modIndex);
   double      getProbability        (double err);
   string      getProtein            (size_t index, size_t protIndex, char rank=1, bool link=false);
   string      getProteinFromList    (int protIndex);
@@ -72,6 +73,7 @@ protected:
 
   bool                  bIProphet;    //Indicates data has been iPropheted
   bool                  bPepProphet;  //Indicates data has been PeptidePropheted
+  bool                  b15N;
 
 	CPepXMLSpectrum 			spec;
 	XML_Parser						parser;
@@ -79,19 +81,27 @@ protected:
   CPepXMLPSM            psm;
 
   int                   currentFileID;
+
+  double                aaMass[128];
+  double                aaMassn15[128];
+
+  size_t                paramIndex;
+  string                lastParam;
+  string                s15NPrefix;
   
   //Internal, global lists
   vector<PepXMLError>     vError;
   vector<string>          vFiles;
-  vector<PepXMLMod>       vMods;
+  //vector<PepXMLMod>       vMods;
+  vector<PepXMLParameter> vParams;
   vector<string>          vProteins;
   vector<string>          vScores;
   vector<CPepXMLSpectrum> vSpectra;
   vector<PepXMLXL>        vXL;
 
-  bool    addMod        (char aa, double mass, double massDiff=0);
+  //bool    addMod        (char aa, double mass, double massDiff=0);
   double  calcMonoMass  (char *seq, bool water=true);
-  char    findMod       (char aa, double mass);
+  //char    findMod       (char aa, double mass);
   size_t  findProtein   (string& s);
   char    findScore     (string& s);
   char    findXL        (string& s, double mass);

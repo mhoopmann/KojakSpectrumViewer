@@ -46,7 +46,10 @@ CFragmentLists::CFragmentLists(){
   bShowIons[0][1]=true;
   bShowIons[0][4]=true;
 
-  for(i=0;i<128;i++)  aaMass[i]=0;
+  for(i=0;i<128;i++)  {
+    aaMass[i]=0;
+    aaMass15n[i]=0;
+  }
   aaMass['A']=71.0371103;
   aaMass['C']=103.0091803;
   aaMass['D']=115.0269385;
@@ -67,6 +70,26 @@ CFragmentLists::CFragmentLists(){
   aaMass['V']=99.0684087;
   aaMass['W']=186.0793065;
   aaMass['Y']=163.0633228;
+  aaMass15n['A'] = 72.0341452;
+  aaMass15n['C'] = 104.0062152;
+  aaMass15n['D'] = 116.0239734;
+  aaMass15n['E'] = 130.0396226;
+  aaMass15n['F'] = 148.0654436;
+  aaMass15n['G'] = 58.018496;
+  aaMass15n['H'] = 140.0500106;
+  aaMass15n['I'] = 114.0810928;
+  aaMass15n['K'] = 130.0890255;
+  aaMass15n['L'] = 114.0810928;
+  aaMass15n['M'] = 132.0375136;
+  aaMass15n['N'] = 116.036992;
+  aaMass15n['P'] = 98.0497944;
+  aaMass15n['Q'] = 130.0526412;
+  aaMass15n['R'] = 160.0892417;
+  aaMass15n['S'] = 88.0290593;
+  aaMass15n['T'] = 102.0447085;
+  aaMass15n['V'] = 100.0654436;
+  aaMass15n['W'] = 188.0733763;
+  aaMass15n['Y'] = 164.0603577;
 }
 
 CFragmentLists::~CFragmentLists(){
@@ -76,7 +99,9 @@ CFragmentLists::~CFragmentLists(){
 }
 
 void CFragmentLists::addMod(int pos, double modMass){
-  double mMass=modMass-aaMass[peptide[pos]];
+  double mMass;
+  if (is15N )mMass = modMass - aaMass15n[peptide[pos]];
+  else mMass=modMass-aaMass[peptide[pos]];
   for(int i=0;i<ionCount;i++){
     if(i>=pos){
       aFrag[0][i] += mMass;
@@ -155,7 +180,10 @@ void CFragmentLists::allocate(){
   }
 
   peptideMass=18.0105633;
-  for(i=0;i<peptide.size();i++) peptideMass+=aaMass[peptide[i]];
+  for(i=0;i<peptide.size();i++) {
+    if (is15N) peptideMass += aaMass15n[peptide[i]];
+    else peptideMass+=aaMass[peptide[i]];
+  }
 }
 
 
@@ -174,7 +202,8 @@ void CFragmentLists::calcIons(int link, int link2, double modMass){
 	//b- & y-ions from first peptide
   mMass=0;
 	for(i=0;i<ionCount;i++){
-    mMass+=aaMass[peptide[i]];
+    if(is15N) mMass+=aaMass15n[peptide[i]];
+    else mMass += aaMass[peptide[i]];
     if(link>-1 && i>=link) {
 
       if(link2>-1 && i<link2) {
@@ -557,8 +586,9 @@ void CFragmentLists::setMatch(int ion, int ch, int index, bool value){
   }
 }
 
-void CFragmentLists::setPeptide(string pep, int ch, int linkPos, int linkPos2, double linkMass){
+void CFragmentLists::setPeptide(string pep, int ch, int linkPos, int linkPos2, double linkMass, bool n15){
   peptide=pep;
+  is15N=n15;
   charge=ch;
   allocate();
   peptideMass+=linkMass;

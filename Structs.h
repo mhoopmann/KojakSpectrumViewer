@@ -64,6 +64,8 @@ typedef struct kvPSM {
   double compMassA;
   double compMassB;
   double mass;
+  bool n15A;
+  bool n15B;
   string peptideA;
   string peptideB;
   vector<kvMod>* modA;
@@ -78,6 +80,8 @@ typedef struct kvPSM {
     compMassA=0;
     compMassB=0;
     mass=0;
+    n15A=false;
+    n15B=false;
     peptideA.clear();
     peptideB.clear();
     modA = new vector<kvMod>;
@@ -96,6 +100,8 @@ typedef struct kvPSM {
     peptideA=k.peptideA;
     peptideB=k.peptideB;
     mass=k.mass;
+    n15A=k.n15A;
+    n15B=k.n15B;
     modA = new vector<kvMod>;
     modB = new vector<kvMod>;
     for(i=0;i<k.modA->size();i++) modA->push_back(k.modA->at(i));
@@ -119,6 +125,8 @@ typedef struct kvPSM {
       peptideA=k.peptideA;
       peptideB=k.peptideB;
       mass=k.mass;
+      n15A = k.n15A;
+      n15B = k.n15B;
       delete modA;
       delete modB;
       modA = new vector<kvMod>;

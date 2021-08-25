@@ -46,7 +46,7 @@ void PepXMLParser3::endElement(const XML_Char *el) {
       peptide.modifiedPeptide+=peptide.peptide[i];
       for(j=0;j<peptide.mods->size();j++){
         if(peptide.mods->at(j).pos==i){
-          sprintf(str,"[%.0lf]",vMods[peptide.mods->at(j).index].massSearch);
+          sprintf(str,"[%.0lf]",peptide.mods->at(j).massDiff);
           peptide.modifiedPeptide+=str;
         }
       }
@@ -80,6 +80,7 @@ void PepXMLParser3::startElement(const XML_Char *el, const XML_Char **attr){
 	size_t        u;
 
   if (isElement("aminoacid_modification",el)){
+    /*
     s = getAttrValue("aminoacid",attr);
     c = s[0];
     s = getAttrValue("mass",attr);
@@ -87,6 +88,7 @@ void PepXMLParser3::startElement(const XML_Char *el, const XML_Char **attr){
     s = getAttrValue("massdiff",attr);
     d2 = atof(&s[0]);
     addMod(c,d1,d2);
+    */
 
   } else if (isElement("error_point",el)){
     PepXMLError e;
@@ -110,6 +112,8 @@ void PepXMLParser3::startElement(const XML_Char *el, const XML_Char **attr){
 		peptide.peptide = getAttrValue("peptide", attr);
     s = getAttrValue("protein", attr);
     peptide.proteins->push_back(findProtein(s));
+    if (s.find(s15NPrefix) != string::npos) b15N = true;
+    else b15N = false;
     s = getAttrValue("peptide_prev_aa", attr);
     if(s.length()>0) peptide.prevAA=s[0];
     else peptide.prevAA='-';
@@ -128,14 +132,14 @@ void PepXMLParser3::startElement(const XML_Char *el, const XML_Char **attr){
     s = getAttrValue("mod_nterm_mass",attr);  
     if(s.size()>0){
       d1 = atof(&s[0]);
-      pm.index = findMod('n',d1);
+      pm.massDiff = d1-1.00782503;
       pm.pos = 0;
       peptide.mods->push_back(pm);
     }
     s = getAttrValue("mod_cterm_mass",attr);  
     if(s.size()>0){
       d1 = atof(&s[0]);
-      pm.index = findMod('c',d1);
+      pm.massDiff = d1-17.00273963;
       pm.pos = (char)peptide.peptide.size()-1;
       peptide.mods->push_back(pm);
     }
@@ -148,7 +152,9 @@ void PepXMLParser3::startElement(const XML_Char *el, const XML_Char **attr){
     s = getAttrValue("position",attr);
     pm.pos = (char)atoi(&s[0])-1;
     c = peptide.peptide[pm.pos];
-    pm.index=findMod(c,d1);
+    pm.massDiff=d1;
+    //if(b15N) pm.massDiff=d1-aaMassn15[c];
+    //else pm.massDiff=d1-aaMass[c];
     peptide.mods->push_back(pm);
 
   } else if (isElement("msms_run_summary",el)){
@@ -161,6 +167,13 @@ void PepXMLParser3::startElement(const XML_Char *el, const XML_Char **attr){
     currentFileID=(int)u;
     if(u==vFiles.size()) vFiles.push_back(s);
     cout << vFiles.size() << " Current ID: " << u << endl;
+
+  } else if (isElement("parameter", el)){
+    PepXMLParameter par;
+    par.name = getAttrValue("name", attr);
+    par.value = getAttrValue("value", attr);
+    if(par.name.compare("15N_filter")==0) s15NPrefix=par.value;
+    vParams.push_back(par);
 
 	} else if (isElement("peptideprophet_result",el)){
 
@@ -189,6 +202,8 @@ void PepXMLParser3::startElement(const XML_Char *el, const XML_Char **attr){
 		  peptide.peptide = getAttrValue("peptide", attr);
       s = getAttrValue("protein", attr);
       peptide.proteins->push_back(findProtein(s));
+      if(s.find(s15NPrefix)!=string::npos) b15N=true;
+      else b15N=false;
       s = getAttrValue("peptide_prev_aa", attr);
       if(s.length()>0) peptide.prevAA=s[0];
       else peptide.prevAA='-';
@@ -227,7 +242,7 @@ void PepXMLParser3::startElement(const XML_Char *el, const XML_Char **attr){
     //spec.index = atoi(&s[0]);
 
 	} else if (isElement("terminal_modification",el)){
-
+    /*
     s = getAttrValue("terminus",attr);
     if(s[0]=='N') c='n';
     else c='c';
@@ -236,6 +251,7 @@ void PepXMLParser3::startElement(const XML_Char *el, const XML_Char **attr){
     s = getAttrValue("massdiff",attr);
     d2 = atof(&s[0]);
     addMod(c,d1,d2);
+    */
 
   } else if (isElement("xlink",el)){
 
@@ -259,6 +275,55 @@ void PepXMLParser3::startElement(const XML_Char *el, const XML_Char **attr){
 PepXMLParser3::PepXMLParser3(){
   bIProphet   = false;
   bPepProphet = false;
+
+  for (int i = 0; i<128; i++) {
+    aaMass[i] = 0;
+    aaMassn15[i] = 0;
+  }
+  aaMass['A'] = 71.0371103;
+  aaMass['C'] = 103.0091803;
+  aaMass['D'] = 115.0269385;
+  aaMass['E'] = 129.0425877;
+  aaMass['F'] = 147.0684087;
+  aaMass['G'] = 57.0214611;
+  aaMass['H'] = 137.0589059;
+  aaMass['I'] = 113.0840579;
+  aaMass['K'] = 128.0949557;
+  aaMass['L'] = 113.0840579;
+  aaMass['M'] = 131.0404787;
+  aaMass['N'] = 114.0429222;
+  aaMass['P'] = 97.0527595;
+  aaMass['Q'] = 128.0585714;
+  aaMass['R'] = 156.1011021;
+  aaMass['S'] = 87.0320244;
+  aaMass['T'] = 101.0476736;
+  aaMass['U'] = 150.9536303;
+  aaMass['V'] = 99.0684087;
+  aaMass['W'] = 186.0793065;
+  aaMass['Y'] = 163.0633228;
+
+  aaMassn15['A'] = 72.0341452;
+  aaMassn15['C'] = 104.0062152;
+  aaMassn15['D'] = 116.0239734;
+  aaMassn15['E'] = 130.0396226;
+  aaMassn15['F'] = 148.0654436;
+  aaMassn15['G'] = 58.018496;
+  aaMassn15['H'] = 140.0500106;
+  aaMassn15['I'] = 114.0810928;
+  aaMassn15['K'] = 130.0890255;
+  aaMassn15['L'] = 114.0810928;
+  aaMassn15['M'] = 132.0375136;
+  aaMassn15['N'] = 116.036992;
+  aaMassn15['P'] = 98.0497944;
+  aaMassn15['Q'] = 130.0526412;
+  aaMassn15['R'] = 160.0892417;
+  aaMassn15['S'] = 88.0290593;
+  aaMassn15['T'] = 102.0447085;
+  aaMassn15['U'] = 151.9506652;
+  aaMassn15['V'] = 100.0654436;
+  aaMassn15['W'] = 188.0733763;
+  aaMassn15['Y'] = 164.0603577;
+
 	parser      = XML_ParserCreate(NULL);
 	XML_SetUserData(parser, this);
 	XML_SetElementHandler(parser, PepXMLParser3_startElementCallback, PepXMLParser3_endElementCallback);
@@ -273,6 +338,7 @@ CPepXMLSpectrum& PepXMLParser3::operator[ ](const size_t& i){
   return vSpectra[i];
 }
 
+/*
 bool PepXMLParser3::addMod(char aa, double mass, double massDiff){
   size_t i;
   PepXMLMod mod;
@@ -384,6 +450,7 @@ bool PepXMLParser3::addMod(char aa, double mass, double massDiff){
   return false;
 
 }
+*/
 
 double PepXMLParser3::calcMonoMass(char *seq, bool water){
 
@@ -437,6 +504,7 @@ double PepXMLParser3::calcMonoMass(char *seq, bool water){
 	return mass;
 }
 
+/*
 char PepXMLParser3::findMod(char aa, double mass){
   size_t i;
   for(i=0;i<vMods.size();i++){
@@ -449,6 +517,7 @@ char PepXMLParser3::findMod(char aa, double mass){
   }
   return (char)i;
 }
+*/
 
 size_t PepXMLParser3::findProtein(string& s){
   size_t i;
@@ -558,6 +627,25 @@ char PepXMLParser3::getLinkType(size_t index, char rank){
   return vSpectra[index][i].xlType;
 }
 
+string PepXMLParser3::getParameter(char* name){
+  size_t i;
+  if(name==NULL){
+    if(lastParam.size()==0) return "";
+    paramIndex++;
+  } else {
+    lastParam=name;
+    paramIndex=0;
+  }
+  for(i=paramIndex;i<vParams.size();i++){
+    if(vParams[i].name.compare(name)==0) {
+      paramIndex=i;
+      return vParams[i].value;
+    }
+  }
+  paramIndex=i;
+  return "";
+}
+
 string PepXMLParser3::getPeptide(size_t index, bool mod, char rank, bool link){
   size_t i;
   if(index>=vSpectra.size()) return "";
@@ -578,15 +666,11 @@ string PepXMLParser3::getPeptide(size_t index, bool mod, char rank, bool link){
   return vSpectra[index][i].peptide->peptide;
 }
 
-PepXMLMod PepXMLParser3::getPeptideMod(size_t pepIndex, size_t modIndex, char rank, bool link){
+PepXMLPepMod PepXMLParser3::getPeptideMod(size_t pepIndex, size_t modIndex, char rank, bool link){
   size_t i;
-  PepXMLMod p;
-  p.aa=0;
-  p.label.clear();
+  PepXMLPepMod p;
+  p.pos=0;
   p.massDiff=0;
-  p.massDiffStd=0;
-  p.massSearch=0;
-  p.massStd=0;
 
   if(pepIndex>=vSpectra.size()) return p;
   for(i=0;i<vSpectra[pepIndex].size();i++){
@@ -596,14 +680,10 @@ PepXMLMod PepXMLParser3::getPeptideMod(size_t pepIndex, size_t modIndex, char ra
   if(link){
     if(vSpectra[pepIndex][i].xlType<2) return p;
     if(modIndex>=vSpectra[pepIndex][i].xlPeptide->mods->size()) return p;
-    p=vMods[vSpectra[pepIndex][i].xlPeptide->mods->at(modIndex).index];
-    p.aa=vSpectra[pepIndex][i].xlPeptide->mods->at(modIndex).pos;
-    return p;
+    return vSpectra[pepIndex][i].xlPeptide->mods->at(modIndex);
   }
   if(modIndex>=vSpectra[pepIndex][i].peptide->mods->size()) return p;
-  p=vMods[vSpectra[pepIndex][i].peptide->mods->at(modIndex).index];
-  p.aa=vSpectra[pepIndex][i].peptide->mods->at(modIndex).pos;
-  return p;
+  return vSpectra[pepIndex][i].peptide->mods->at(modIndex);
 }
 
 size_t PepXMLParser3::getPeptideModCount(size_t index, char rank, bool link){
@@ -676,13 +756,17 @@ bool PepXMLParser3::readFile(const char* fileName) {
 
 	vSpectra.clear();
   vScores.clear();
+  vParams.clear();
   vProteins.clear();
-  vMods.clear();
+  //vMods.clear();
   vFiles.clear();
   vError.clear();
   vXL.clear();
   bIProphet=false;
   bPepProphet=false;
+  paramIndex=0;
+  lastParam.clear();
+  s15NPrefix="nullNULL";
 	
 	FILE* fptr=fopen(fileName,"rt");
 	if (fptr == NULL){
