@@ -154,6 +154,7 @@ bool CFont::setText(char c, SDL_Texture*& dest, int color){
   col.r=display->txtColors[color].r;
   col.g=display->txtColors[color].g;
   col.b=display->txtColors[color].b;
+  col.a=255;
   SDL_Surface* surf;
   surf = TTF_RenderText_Blended(font,str,col);
   if(surf==NULL) return false;
